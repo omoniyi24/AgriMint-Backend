@@ -1,0 +1,8 @@
+application {
+  config {
+    baseName Ag
+    applicationType microservice
+    serverPort 4242
+    buildTool gradle
+  }
+}
