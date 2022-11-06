@@ -1,3 +1,4 @@
+FROM --platform=linux/amd64 maven:3.6.3-openjdk-14-slim AS build
 FROM maven:3.6.3-openjdk-14-slim AS build
 RUN mkdir -p /workspace
 WORKDIR /workspace
