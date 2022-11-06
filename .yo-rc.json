@@ -34,7 +34,7 @@
     "enableTranslation": true,
     "nativeLanguage": "en",
     "packageFolder": "com/github/agrimint",
-    "jwtSecretKey": "YjIxM2I1MDUxNTAyYTNiM2FhYjI1MTUxOTYzY2ZlYmE4MmRiN2UwMzg4NDIzM2IwYWMxNWE4YWJhZmYxMGRiMTQ4MWM3M2ZkZDQ0Nzk5YzQ3MDIxMjA2ZTdhOWIwMzg2MzRmNThhNjM0ZDg2ZTYzYWIyNjQ2NzY4ZWQ5NGVjYTY=",
+    "jwtSecretKey": "{secrets.JWT_SECRET}",
     "languages": ["en"],
     "otherModules": [],
     "entities": ["Member", "Guardian", "Federation", "FederationMember"],
