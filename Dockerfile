@@ -1,6 +1,8 @@
 FROM maven:3.6.0-jdk-11-slim AS build
 COPY src /home/app/src
 COPY pom.xml /home/app
+
+RUN dos2unix mvnw
 RUN mvnw clean install -DskipTests
 
 FROM openjdk:11-slim
