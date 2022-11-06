@@ -14,5 +14,6 @@ public class CreateFederationRequestDTO implements Serializable {
     @NotNull
     private String name;
 
-    private String alias;
+    @NotNull
+    private Integer numberOfNode;
 }
