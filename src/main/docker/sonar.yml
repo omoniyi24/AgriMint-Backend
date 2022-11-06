@@ -2,6 +2,7 @@
 version: '3.8'
 services:
   agrimint-sonar:
+    platform: linux/x86_64
     image: sonarqube:8.7.0-community
     # Authentication is turned off for out of the box experience while trying out SonarQube
     # For real use cases delete sonar.forceAuthentication variable or set sonar.forceAuthentication=true

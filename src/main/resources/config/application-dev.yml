@@ -26,6 +26,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
+    enabled: false
 
 spring:
   devtools:

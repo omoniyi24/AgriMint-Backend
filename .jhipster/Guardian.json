@@ -1,0 +1,34 @@
+{
+  "name": "Guardian",
+  "fields": [
+    {
+      "fieldName": "memberId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "invitationSent",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "invitationAccepted",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "guardian",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "microserviceName": "AgriMint",
+  "clientRootFolder": "AgriMint",
+  "databaseType": "sql",
+  "changelogDate": "20221104221632"
+}

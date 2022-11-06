@@ -1,8 +1,45 @@
-application {
-  config {
-    baseName Ag
-    applicationType microservice
-    serverPort 4242
-    buildTool gradle
-  }
+entity Member {
+    name String required
+    alias String
+    federationId Long required
+    phoneNumber String required
+    countryCode String required
+    active Boolean required
+    guardian Boolean required
+    dateCreated Instant required
 }
+
+entity Guardian {
+    memberId Long required
+    invitationSent Boolean required
+    invitationAccepted Boolean required
+}
+
+entity Federation {
+    name String required
+    alias String
+    active Boolean required
+    dateCreated Instant required
+}
+
+entity FederationMember {
+    federationId Long required
+    memberId Long required
+    active Boolean required
+    dateCreated Instant required
+}
+
+
+// Set pagination options
+paginate * with pagination
+
+// Use Data Transfer Objects (DTO)
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
+
+filter *
