@@ -1,20 +1,17 @@
 package com.github.agrimint.extended.resources;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
-import com.github.agrimint.extended.exeception.FederationNotFoundExecption;
+import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
 import com.github.agrimint.extended.service.ExtendedMemberService;
 import com.github.agrimint.repository.MemberRepository;
 import com.github.agrimint.service.MemberQueryService;
-import com.github.agrimint.service.MemberService;
 import com.github.agrimint.service.criteria.MemberCriteria;
 import com.github.agrimint.service.dto.MemberDTO;
-import com.github.agrimint.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,7 +71,7 @@ public class ExtendedMemberResource {
 
         try {
             result = memberService.create(memberDTO);
-        } catch (MemberAlreadyExistExecption | FederationNotFoundExecption ex) {
+        } catch (MemberAlreadyExistExecption | FederationExecption ex) {
             Map<String, String> errorMessageMap = new HashMap<>();
             errorMessageMap.put("errorMessage", ex.getMessage());
             return ResponseEntity.badRequest().body(errorMessageMap);

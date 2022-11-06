@@ -23,8 +23,21 @@ public class Federation implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "alias")
-    private String alias;
+    @NotNull
+    @Column(name = "fedimint_id", nullable = false)
+    private String fedimintId;
+
+    @NotNull
+    @Column(name = "number_of_node", nullable = false)
+    private Integer numberOfNode;
+
+    @NotNull
+    @Column(name = "base_port", nullable = false)
+    private Long basePort;
+
+    @NotNull
+    @Column(name = "number_of_registered_node", nullable = false)
+    private Integer numberOfRegisteredNode;
 
     @NotNull
     @Column(name = "active", nullable = false)
@@ -61,17 +74,56 @@ public class Federation implements Serializable {
         this.name = name;
     }
 
-    public String getAlias() {
-        return this.alias;
+    public String getFedimintId() {
+        return this.fedimintId;
     }
 
-    public Federation alias(String alias) {
-        this.alias = alias;
+    public Federation fedimintId(String fedimintId) {
+        this.fedimintId = fedimintId;
         return this;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setFedimintId(String fedimintId) {
+        this.fedimintId = fedimintId;
+    }
+
+    public Integer getNumberOfNode() {
+        return this.numberOfNode;
+    }
+
+    public Federation numberOfNode(Integer numberOfNode) {
+        this.numberOfNode = numberOfNode;
+        return this;
+    }
+
+    public void setNumberOfNode(Integer numberOfNode) {
+        this.numberOfNode = numberOfNode;
+    }
+
+    public Long getBasePort() {
+        return this.basePort;
+    }
+
+    public Federation basePort(Long basePort) {
+        this.basePort = basePort;
+        return this;
+    }
+
+    public void setBasePort(Long basePort) {
+        this.basePort = basePort;
+    }
+
+    public Integer getNumberOfRegisteredNode() {
+        return this.numberOfRegisteredNode;
+    }
+
+    public Federation numberOfRegisteredNode(Integer numberOfRegisteredNode) {
+        this.numberOfRegisteredNode = numberOfRegisteredNode;
+        return this;
+    }
+
+    public void setNumberOfRegisteredNode(Integer numberOfRegisteredNode) {
+        this.numberOfRegisteredNode = numberOfRegisteredNode;
     }
 
     public Boolean getActive() {
@@ -125,7 +177,10 @@ public class Federation implements Serializable {
         return "Federation{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", alias='" + getAlias() + "'" +
+            ", fedimintId='" + getFedimintId() + "'" +
+            ", numberOfNode=" + getNumberOfNode() +
+            ", basePort=" + getBasePort() +
+            ", numberOfRegisteredNode=" + getNumberOfRegisteredNode() +
             ", active='" + getActive() + "'" +
             ", dateCreated='" + getDateCreated() + "'" +
             "}";

@@ -17,7 +17,10 @@ entity Guardian {
 
 entity Federation {
     name String required
-    alias String
+    fedimintId String required
+    numberOfNode Integer required
+    basePort Long required
+    numberOfRegisteredNode Integer required
     active Boolean required
     dateCreated Instant required
 }

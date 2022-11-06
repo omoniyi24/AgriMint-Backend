@@ -17,8 +17,17 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="alias" type="varchar(255)">
-                <constraints nullable="true" />
+            <column name="fedimint_id" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="number_of_node" type="integer">
+                <constraints nullable="false" />
+            </column>
+            <column name="base_port" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="number_of_registered_node" type="integer">
+                <constraints nullable="false" />
             </column>
             <column name="active" type="boolean">
                 <constraints nullable="false" />
@@ -48,7 +57,10 @@
                   tableName="federation">
             <column name="id" type="numeric"/>
             <column name="name" type="string"/>
-            <column name="alias" type="string"/>
+            <column name="fedimint_id" type="string"/>
+            <column name="number_of_node" type="numeric"/>
+            <column name="base_port" type="numeric"/>
+            <column name="number_of_registered_node" type="numeric"/>
             <column name="active" type="boolean"/>
             <column name="date_created" type="${datetimeType}"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->

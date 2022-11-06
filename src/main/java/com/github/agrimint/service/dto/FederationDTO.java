@@ -15,7 +15,17 @@ public class FederationDTO implements Serializable {
     @NotNull
     private String name;
 
-    private String alias;
+    @NotNull
+    private String fedimintId;
+
+    @NotNull
+    private Integer numberOfNode;
+
+    @NotNull
+    private Long basePort;
+
+    @NotNull
+    private Integer numberOfRegisteredNode;
 
     @NotNull
     private Boolean active;
@@ -39,12 +49,36 @@ public class FederationDTO implements Serializable {
         this.name = name;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getFedimintId() {
+        return fedimintId;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setFedimintId(String fedimintId) {
+        this.fedimintId = fedimintId;
+    }
+
+    public Integer getNumberOfNode() {
+        return numberOfNode;
+    }
+
+    public void setNumberOfNode(Integer numberOfNode) {
+        this.numberOfNode = numberOfNode;
+    }
+
+    public Long getBasePort() {
+        return basePort;
+    }
+
+    public void setBasePort(Long basePort) {
+        this.basePort = basePort;
+    }
+
+    public Integer getNumberOfRegisteredNode() {
+        return numberOfRegisteredNode;
+    }
+
+    public void setNumberOfRegisteredNode(Integer numberOfRegisteredNode) {
+        this.numberOfRegisteredNode = numberOfRegisteredNode;
     }
 
     public Boolean getActive() {
@@ -90,7 +124,10 @@ public class FederationDTO implements Serializable {
         return "FederationDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", alias='" + getAlias() + "'" +
+            ", fedimintId='" + getFedimintId() + "'" +
+            ", numberOfNode=" + getNumberOfNode() +
+            ", basePort=" + getBasePort() +
+            ", numberOfRegisteredNode=" + getNumberOfRegisteredNode() +
             ", active='" + getActive() + "'" +
             ", dateCreated='" + getDateCreated() + "'" +
             "}";

@@ -3,7 +3,7 @@ package com.github.agrimint.extended.service.impl;
 import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_WITH_ID_DOES_NOT_EXIST;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
-import com.github.agrimint.extended.exeception.FederationNotFoundExecption;
+import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
 import com.github.agrimint.extended.util.QueryUtil;
@@ -40,11 +40,9 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
     }
 
     @Override
-    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO) throws MemberAlreadyExistExecption, FederationNotFoundExecption {
+    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO) throws MemberAlreadyExistExecption, FederationExecption {
         if (federationService.findOne(creatGuardianRequestDTO.getFederationId()).isEmpty()) {
-            throw new FederationNotFoundExecption(
-                String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatGuardianRequestDTO.getFederationId())
-            );
+            throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatGuardianRequestDTO.getFederationId()));
         }
         MemberDTO memberDTO = new MemberDTO();
         BeanUtils.copyProperties(creatGuardianRequestDTO, memberDTO);

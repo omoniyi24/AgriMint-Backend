@@ -37,8 +37,20 @@ class FederationResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ALIAS = "AAAAAAAAAA";
-    private static final String UPDATED_ALIAS = "BBBBBBBBBB";
+    private static final String DEFAULT_FEDIMINT_ID = "AAAAAAAAAA";
+    private static final String UPDATED_FEDIMINT_ID = "BBBBBBBBBB";
+
+    private static final Integer DEFAULT_NUMBER_OF_NODE = 1;
+    private static final Integer UPDATED_NUMBER_OF_NODE = 2;
+    private static final Integer SMALLER_NUMBER_OF_NODE = 1 - 1;
+
+    private static final Long DEFAULT_BASE_PORT = 1L;
+    private static final Long UPDATED_BASE_PORT = 2L;
+    private static final Long SMALLER_BASE_PORT = 1L - 1L;
+
+    private static final Integer DEFAULT_NUMBER_OF_REGISTERED_NODE = 1;
+    private static final Integer UPDATED_NUMBER_OF_REGISTERED_NODE = 2;
+    private static final Integer SMALLER_NUMBER_OF_REGISTERED_NODE = 1 - 1;
 
     private static final Boolean DEFAULT_ACTIVE = false;
     private static final Boolean UPDATED_ACTIVE = true;
@@ -75,7 +87,10 @@ class FederationResourceIT {
     public static Federation createEntity(EntityManager em) {
         Federation federation = new Federation()
             .name(DEFAULT_NAME)
-            .alias(DEFAULT_ALIAS)
+            .fedimintId(DEFAULT_FEDIMINT_ID)
+            .numberOfNode(DEFAULT_NUMBER_OF_NODE)
+            .basePort(DEFAULT_BASE_PORT)
+            .numberOfRegisteredNode(DEFAULT_NUMBER_OF_REGISTERED_NODE)
             .active(DEFAULT_ACTIVE)
             .dateCreated(DEFAULT_DATE_CREATED);
         return federation;
@@ -90,7 +105,10 @@ class FederationResourceIT {
     public static Federation createUpdatedEntity(EntityManager em) {
         Federation federation = new Federation()
             .name(UPDATED_NAME)
-            .alias(UPDATED_ALIAS)
+            .fedimintId(UPDATED_FEDIMINT_ID)
+            .numberOfNode(UPDATED_NUMBER_OF_NODE)
+            .basePort(UPDATED_BASE_PORT)
+            .numberOfRegisteredNode(UPDATED_NUMBER_OF_REGISTERED_NODE)
             .active(UPDATED_ACTIVE)
             .dateCreated(UPDATED_DATE_CREATED);
         return federation;
@@ -116,7 +134,10 @@ class FederationResourceIT {
         assertThat(federationList).hasSize(databaseSizeBeforeCreate + 1);
         Federation testFederation = federationList.get(federationList.size() - 1);
         assertThat(testFederation.getName()).isEqualTo(DEFAULT_NAME);
-        assertThat(testFederation.getAlias()).isEqualTo(DEFAULT_ALIAS);
+        assertThat(testFederation.getFedimintId()).isEqualTo(DEFAULT_FEDIMINT_ID);
+        assertThat(testFederation.getNumberOfNode()).isEqualTo(DEFAULT_NUMBER_OF_NODE);
+        assertThat(testFederation.getBasePort()).isEqualTo(DEFAULT_BASE_PORT);
+        assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(DEFAULT_NUMBER_OF_REGISTERED_NODE);
         assertThat(testFederation.getActive()).isEqualTo(DEFAULT_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(DEFAULT_DATE_CREATED);
     }
@@ -146,6 +167,78 @@ class FederationResourceIT {
         int databaseSizeBeforeTest = federationRepository.findAll().size();
         // set the field null
         federation.setName(null);
+
+        // Create the Federation, which fails.
+        FederationDTO federationDTO = federationMapper.toDto(federation);
+
+        restFederationMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(federationDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Federation> federationList = federationRepository.findAll();
+        assertThat(federationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkFedimintIdIsRequired() throws Exception {
+        int databaseSizeBeforeTest = federationRepository.findAll().size();
+        // set the field null
+        federation.setFedimintId(null);
+
+        // Create the Federation, which fails.
+        FederationDTO federationDTO = federationMapper.toDto(federation);
+
+        restFederationMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(federationDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Federation> federationList = federationRepository.findAll();
+        assertThat(federationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkNumberOfNodeIsRequired() throws Exception {
+        int databaseSizeBeforeTest = federationRepository.findAll().size();
+        // set the field null
+        federation.setNumberOfNode(null);
+
+        // Create the Federation, which fails.
+        FederationDTO federationDTO = federationMapper.toDto(federation);
+
+        restFederationMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(federationDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Federation> federationList = federationRepository.findAll();
+        assertThat(federationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkBasePortIsRequired() throws Exception {
+        int databaseSizeBeforeTest = federationRepository.findAll().size();
+        // set the field null
+        federation.setBasePort(null);
+
+        // Create the Federation, which fails.
+        FederationDTO federationDTO = federationMapper.toDto(federation);
+
+        restFederationMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(federationDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Federation> federationList = federationRepository.findAll();
+        assertThat(federationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkNumberOfRegisteredNodeIsRequired() throws Exception {
+        int databaseSizeBeforeTest = federationRepository.findAll().size();
+        // set the field null
+        federation.setNumberOfRegisteredNode(null);
 
         // Create the Federation, which fails.
         FederationDTO federationDTO = federationMapper.toDto(federation);
@@ -207,7 +300,10 @@ class FederationResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(federation.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].alias").value(hasItem(DEFAULT_ALIAS)))
+            .andExpect(jsonPath("$.[*].fedimintId").value(hasItem(DEFAULT_FEDIMINT_ID)))
+            .andExpect(jsonPath("$.[*].numberOfNode").value(hasItem(DEFAULT_NUMBER_OF_NODE)))
+            .andExpect(jsonPath("$.[*].basePort").value(hasItem(DEFAULT_BASE_PORT.intValue())))
+            .andExpect(jsonPath("$.[*].numberOfRegisteredNode").value(hasItem(DEFAULT_NUMBER_OF_REGISTERED_NODE)))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
             .andExpect(jsonPath("$.[*].dateCreated").value(hasItem(DEFAULT_DATE_CREATED.toString())));
     }
@@ -225,7 +321,10 @@ class FederationResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(federation.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
-            .andExpect(jsonPath("$.alias").value(DEFAULT_ALIAS))
+            .andExpect(jsonPath("$.fedimintId").value(DEFAULT_FEDIMINT_ID))
+            .andExpect(jsonPath("$.numberOfNode").value(DEFAULT_NUMBER_OF_NODE))
+            .andExpect(jsonPath("$.basePort").value(DEFAULT_BASE_PORT.intValue()))
+            .andExpect(jsonPath("$.numberOfRegisteredNode").value(DEFAULT_NUMBER_OF_REGISTERED_NODE))
             .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE.booleanValue()))
             .andExpect(jsonPath("$.dateCreated").value(DEFAULT_DATE_CREATED.toString()));
     }
@@ -328,80 +427,394 @@ class FederationResourceIT {
 
     @Test
     @Transactional
-    void getAllFederationsByAliasIsEqualToSomething() throws Exception {
+    void getAllFederationsByFedimintIdIsEqualToSomething() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
 
-        // Get all the federationList where alias equals to DEFAULT_ALIAS
-        defaultFederationShouldBeFound("alias.equals=" + DEFAULT_ALIAS);
+        // Get all the federationList where fedimintId equals to DEFAULT_FEDIMINT_ID
+        defaultFederationShouldBeFound("fedimintId.equals=" + DEFAULT_FEDIMINT_ID);
 
-        // Get all the federationList where alias equals to UPDATED_ALIAS
-        defaultFederationShouldNotBeFound("alias.equals=" + UPDATED_ALIAS);
+        // Get all the federationList where fedimintId equals to UPDATED_FEDIMINT_ID
+        defaultFederationShouldNotBeFound("fedimintId.equals=" + UPDATED_FEDIMINT_ID);
     }
 
     @Test
     @Transactional
-    void getAllFederationsByAliasIsNotEqualToSomething() throws Exception {
+    void getAllFederationsByFedimintIdIsNotEqualToSomething() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
 
-        // Get all the federationList where alias not equals to DEFAULT_ALIAS
-        defaultFederationShouldNotBeFound("alias.notEquals=" + DEFAULT_ALIAS);
+        // Get all the federationList where fedimintId not equals to DEFAULT_FEDIMINT_ID
+        defaultFederationShouldNotBeFound("fedimintId.notEquals=" + DEFAULT_FEDIMINT_ID);
 
-        // Get all the federationList where alias not equals to UPDATED_ALIAS
-        defaultFederationShouldBeFound("alias.notEquals=" + UPDATED_ALIAS);
+        // Get all the federationList where fedimintId not equals to UPDATED_FEDIMINT_ID
+        defaultFederationShouldBeFound("fedimintId.notEquals=" + UPDATED_FEDIMINT_ID);
     }
 
     @Test
     @Transactional
-    void getAllFederationsByAliasIsInShouldWork() throws Exception {
+    void getAllFederationsByFedimintIdIsInShouldWork() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
 
-        // Get all the federationList where alias in DEFAULT_ALIAS or UPDATED_ALIAS
-        defaultFederationShouldBeFound("alias.in=" + DEFAULT_ALIAS + "," + UPDATED_ALIAS);
+        // Get all the federationList where fedimintId in DEFAULT_FEDIMINT_ID or UPDATED_FEDIMINT_ID
+        defaultFederationShouldBeFound("fedimintId.in=" + DEFAULT_FEDIMINT_ID + "," + UPDATED_FEDIMINT_ID);
 
-        // Get all the federationList where alias equals to UPDATED_ALIAS
-        defaultFederationShouldNotBeFound("alias.in=" + UPDATED_ALIAS);
+        // Get all the federationList where fedimintId equals to UPDATED_FEDIMINT_ID
+        defaultFederationShouldNotBeFound("fedimintId.in=" + UPDATED_FEDIMINT_ID);
     }
 
     @Test
     @Transactional
-    void getAllFederationsByAliasIsNullOrNotNull() throws Exception {
+    void getAllFederationsByFedimintIdIsNullOrNotNull() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
 
-        // Get all the federationList where alias is not null
-        defaultFederationShouldBeFound("alias.specified=true");
+        // Get all the federationList where fedimintId is not null
+        defaultFederationShouldBeFound("fedimintId.specified=true");
 
-        // Get all the federationList where alias is null
-        defaultFederationShouldNotBeFound("alias.specified=false");
+        // Get all the federationList where fedimintId is null
+        defaultFederationShouldNotBeFound("fedimintId.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllFederationsByAliasContainsSomething() throws Exception {
+    void getAllFederationsByFedimintIdContainsSomething() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
 
-        // Get all the federationList where alias contains DEFAULT_ALIAS
-        defaultFederationShouldBeFound("alias.contains=" + DEFAULT_ALIAS);
+        // Get all the federationList where fedimintId contains DEFAULT_FEDIMINT_ID
+        defaultFederationShouldBeFound("fedimintId.contains=" + DEFAULT_FEDIMINT_ID);
 
-        // Get all the federationList where alias contains UPDATED_ALIAS
-        defaultFederationShouldNotBeFound("alias.contains=" + UPDATED_ALIAS);
+        // Get all the federationList where fedimintId contains UPDATED_FEDIMINT_ID
+        defaultFederationShouldNotBeFound("fedimintId.contains=" + UPDATED_FEDIMINT_ID);
     }
 
     @Test
     @Transactional
-    void getAllFederationsByAliasNotContainsSomething() throws Exception {
+    void getAllFederationsByFedimintIdNotContainsSomething() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
 
-        // Get all the federationList where alias does not contain DEFAULT_ALIAS
-        defaultFederationShouldNotBeFound("alias.doesNotContain=" + DEFAULT_ALIAS);
+        // Get all the federationList where fedimintId does not contain DEFAULT_FEDIMINT_ID
+        defaultFederationShouldNotBeFound("fedimintId.doesNotContain=" + DEFAULT_FEDIMINT_ID);
 
-        // Get all the federationList where alias does not contain UPDATED_ALIAS
-        defaultFederationShouldBeFound("alias.doesNotContain=" + UPDATED_ALIAS);
+        // Get all the federationList where fedimintId does not contain UPDATED_FEDIMINT_ID
+        defaultFederationShouldBeFound("fedimintId.doesNotContain=" + UPDATED_FEDIMINT_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode equals to DEFAULT_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.equals=" + DEFAULT_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode equals to UPDATED_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.equals=" + UPDATED_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode not equals to DEFAULT_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.notEquals=" + DEFAULT_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode not equals to UPDATED_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.notEquals=" + UPDATED_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode in DEFAULT_NUMBER_OF_NODE or UPDATED_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.in=" + DEFAULT_NUMBER_OF_NODE + "," + UPDATED_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode equals to UPDATED_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.in=" + UPDATED_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode is not null
+        defaultFederationShouldBeFound("numberOfNode.specified=true");
+
+        // Get all the federationList where numberOfNode is null
+        defaultFederationShouldNotBeFound("numberOfNode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode is greater than or equal to DEFAULT_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.greaterThanOrEqual=" + DEFAULT_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode is greater than or equal to UPDATED_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.greaterThanOrEqual=" + UPDATED_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode is less than or equal to DEFAULT_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.lessThanOrEqual=" + DEFAULT_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode is less than or equal to SMALLER_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.lessThanOrEqual=" + SMALLER_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsLessThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode is less than DEFAULT_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.lessThan=" + DEFAULT_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode is less than UPDATED_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.lessThan=" + UPDATED_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfNodeIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfNode is greater than DEFAULT_NUMBER_OF_NODE
+        defaultFederationShouldNotBeFound("numberOfNode.greaterThan=" + DEFAULT_NUMBER_OF_NODE);
+
+        // Get all the federationList where numberOfNode is greater than SMALLER_NUMBER_OF_NODE
+        defaultFederationShouldBeFound("numberOfNode.greaterThan=" + SMALLER_NUMBER_OF_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort equals to DEFAULT_BASE_PORT
+        defaultFederationShouldBeFound("basePort.equals=" + DEFAULT_BASE_PORT);
+
+        // Get all the federationList where basePort equals to UPDATED_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.equals=" + UPDATED_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort not equals to DEFAULT_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.notEquals=" + DEFAULT_BASE_PORT);
+
+        // Get all the federationList where basePort not equals to UPDATED_BASE_PORT
+        defaultFederationShouldBeFound("basePort.notEquals=" + UPDATED_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsInShouldWork() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort in DEFAULT_BASE_PORT or UPDATED_BASE_PORT
+        defaultFederationShouldBeFound("basePort.in=" + DEFAULT_BASE_PORT + "," + UPDATED_BASE_PORT);
+
+        // Get all the federationList where basePort equals to UPDATED_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.in=" + UPDATED_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort is not null
+        defaultFederationShouldBeFound("basePort.specified=true");
+
+        // Get all the federationList where basePort is null
+        defaultFederationShouldNotBeFound("basePort.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort is greater than or equal to DEFAULT_BASE_PORT
+        defaultFederationShouldBeFound("basePort.greaterThanOrEqual=" + DEFAULT_BASE_PORT);
+
+        // Get all the federationList where basePort is greater than or equal to UPDATED_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.greaterThanOrEqual=" + UPDATED_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort is less than or equal to DEFAULT_BASE_PORT
+        defaultFederationShouldBeFound("basePort.lessThanOrEqual=" + DEFAULT_BASE_PORT);
+
+        // Get all the federationList where basePort is less than or equal to SMALLER_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.lessThanOrEqual=" + SMALLER_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsLessThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort is less than DEFAULT_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.lessThan=" + DEFAULT_BASE_PORT);
+
+        // Get all the federationList where basePort is less than UPDATED_BASE_PORT
+        defaultFederationShouldBeFound("basePort.lessThan=" + UPDATED_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByBasePortIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where basePort is greater than DEFAULT_BASE_PORT
+        defaultFederationShouldNotBeFound("basePort.greaterThan=" + DEFAULT_BASE_PORT);
+
+        // Get all the federationList where basePort is greater than SMALLER_BASE_PORT
+        defaultFederationShouldBeFound("basePort.greaterThan=" + SMALLER_BASE_PORT);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode equals to DEFAULT_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound("numberOfRegisteredNode.equals=" + DEFAULT_NUMBER_OF_REGISTERED_NODE);
+
+        // Get all the federationList where numberOfRegisteredNode equals to UPDATED_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.equals=" + UPDATED_NUMBER_OF_REGISTERED_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode not equals to DEFAULT_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.notEquals=" + DEFAULT_NUMBER_OF_REGISTERED_NODE);
+
+        // Get all the federationList where numberOfRegisteredNode not equals to UPDATED_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound("numberOfRegisteredNode.notEquals=" + UPDATED_NUMBER_OF_REGISTERED_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsInShouldWork() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode in DEFAULT_NUMBER_OF_REGISTERED_NODE or UPDATED_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound(
+            "numberOfRegisteredNode.in=" + DEFAULT_NUMBER_OF_REGISTERED_NODE + "," + UPDATED_NUMBER_OF_REGISTERED_NODE
+        );
+
+        // Get all the federationList where numberOfRegisteredNode equals to UPDATED_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.in=" + UPDATED_NUMBER_OF_REGISTERED_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode is not null
+        defaultFederationShouldBeFound("numberOfRegisteredNode.specified=true");
+
+        // Get all the federationList where numberOfRegisteredNode is null
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode is greater than or equal to DEFAULT_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound("numberOfRegisteredNode.greaterThanOrEqual=" + DEFAULT_NUMBER_OF_REGISTERED_NODE);
+
+        // Get all the federationList where numberOfRegisteredNode is greater than or equal to UPDATED_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.greaterThanOrEqual=" + UPDATED_NUMBER_OF_REGISTERED_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode is less than or equal to DEFAULT_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound("numberOfRegisteredNode.lessThanOrEqual=" + DEFAULT_NUMBER_OF_REGISTERED_NODE);
+
+        // Get all the federationList where numberOfRegisteredNode is less than or equal to SMALLER_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.lessThanOrEqual=" + SMALLER_NUMBER_OF_REGISTERED_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsLessThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode is less than DEFAULT_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.lessThan=" + DEFAULT_NUMBER_OF_REGISTERED_NODE);
+
+        // Get all the federationList where numberOfRegisteredNode is less than UPDATED_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound("numberOfRegisteredNode.lessThan=" + UPDATED_NUMBER_OF_REGISTERED_NODE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByNumberOfRegisteredNodeIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where numberOfRegisteredNode is greater than DEFAULT_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldNotBeFound("numberOfRegisteredNode.greaterThan=" + DEFAULT_NUMBER_OF_REGISTERED_NODE);
+
+        // Get all the federationList where numberOfRegisteredNode is greater than SMALLER_NUMBER_OF_REGISTERED_NODE
+        defaultFederationShouldBeFound("numberOfRegisteredNode.greaterThan=" + SMALLER_NUMBER_OF_REGISTERED_NODE);
     }
 
     @Test
@@ -518,7 +931,10 @@ class FederationResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(federation.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].alias").value(hasItem(DEFAULT_ALIAS)))
+            .andExpect(jsonPath("$.[*].fedimintId").value(hasItem(DEFAULT_FEDIMINT_ID)))
+            .andExpect(jsonPath("$.[*].numberOfNode").value(hasItem(DEFAULT_NUMBER_OF_NODE)))
+            .andExpect(jsonPath("$.[*].basePort").value(hasItem(DEFAULT_BASE_PORT.intValue())))
+            .andExpect(jsonPath("$.[*].numberOfRegisteredNode").value(hasItem(DEFAULT_NUMBER_OF_REGISTERED_NODE)))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
             .andExpect(jsonPath("$.[*].dateCreated").value(hasItem(DEFAULT_DATE_CREATED.toString())));
 
@@ -568,7 +984,14 @@ class FederationResourceIT {
         Federation updatedFederation = federationRepository.findById(federation.getId()).get();
         // Disconnect from session so that the updates on updatedFederation are not directly saved in db
         em.detach(updatedFederation);
-        updatedFederation.name(UPDATED_NAME).alias(UPDATED_ALIAS).active(UPDATED_ACTIVE).dateCreated(UPDATED_DATE_CREATED);
+        updatedFederation
+            .name(UPDATED_NAME)
+            .fedimintId(UPDATED_FEDIMINT_ID)
+            .numberOfNode(UPDATED_NUMBER_OF_NODE)
+            .basePort(UPDATED_BASE_PORT)
+            .numberOfRegisteredNode(UPDATED_NUMBER_OF_REGISTERED_NODE)
+            .active(UPDATED_ACTIVE)
+            .dateCreated(UPDATED_DATE_CREATED);
         FederationDTO federationDTO = federationMapper.toDto(updatedFederation);
 
         restFederationMockMvc
@@ -584,7 +1007,10 @@ class FederationResourceIT {
         assertThat(federationList).hasSize(databaseSizeBeforeUpdate);
         Federation testFederation = federationList.get(federationList.size() - 1);
         assertThat(testFederation.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testFederation.getAlias()).isEqualTo(UPDATED_ALIAS);
+        assertThat(testFederation.getFedimintId()).isEqualTo(UPDATED_FEDIMINT_ID);
+        assertThat(testFederation.getNumberOfNode()).isEqualTo(UPDATED_NUMBER_OF_NODE);
+        assertThat(testFederation.getBasePort()).isEqualTo(UPDATED_BASE_PORT);
+        assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(UPDATED_NUMBER_OF_REGISTERED_NODE);
         assertThat(testFederation.getActive()).isEqualTo(UPDATED_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
     }
@@ -666,7 +1092,11 @@ class FederationResourceIT {
         Federation partialUpdatedFederation = new Federation();
         partialUpdatedFederation.setId(federation.getId());
 
-        partialUpdatedFederation.name(UPDATED_NAME).active(UPDATED_ACTIVE).dateCreated(UPDATED_DATE_CREATED);
+        partialUpdatedFederation
+            .name(UPDATED_NAME)
+            .numberOfNode(UPDATED_NUMBER_OF_NODE)
+            .basePort(UPDATED_BASE_PORT)
+            .dateCreated(UPDATED_DATE_CREATED);
 
         restFederationMockMvc
             .perform(
@@ -681,8 +1111,11 @@ class FederationResourceIT {
         assertThat(federationList).hasSize(databaseSizeBeforeUpdate);
         Federation testFederation = federationList.get(federationList.size() - 1);
         assertThat(testFederation.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testFederation.getAlias()).isEqualTo(DEFAULT_ALIAS);
-        assertThat(testFederation.getActive()).isEqualTo(UPDATED_ACTIVE);
+        assertThat(testFederation.getFedimintId()).isEqualTo(DEFAULT_FEDIMINT_ID);
+        assertThat(testFederation.getNumberOfNode()).isEqualTo(UPDATED_NUMBER_OF_NODE);
+        assertThat(testFederation.getBasePort()).isEqualTo(UPDATED_BASE_PORT);
+        assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(DEFAULT_NUMBER_OF_REGISTERED_NODE);
+        assertThat(testFederation.getActive()).isEqualTo(DEFAULT_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
     }
 
@@ -698,7 +1131,14 @@ class FederationResourceIT {
         Federation partialUpdatedFederation = new Federation();
         partialUpdatedFederation.setId(federation.getId());
 
-        partialUpdatedFederation.name(UPDATED_NAME).alias(UPDATED_ALIAS).active(UPDATED_ACTIVE).dateCreated(UPDATED_DATE_CREATED);
+        partialUpdatedFederation
+            .name(UPDATED_NAME)
+            .fedimintId(UPDATED_FEDIMINT_ID)
+            .numberOfNode(UPDATED_NUMBER_OF_NODE)
+            .basePort(UPDATED_BASE_PORT)
+            .numberOfRegisteredNode(UPDATED_NUMBER_OF_REGISTERED_NODE)
+            .active(UPDATED_ACTIVE)
+            .dateCreated(UPDATED_DATE_CREATED);
 
         restFederationMockMvc
             .perform(
@@ -713,7 +1153,10 @@ class FederationResourceIT {
         assertThat(federationList).hasSize(databaseSizeBeforeUpdate);
         Federation testFederation = federationList.get(federationList.size() - 1);
         assertThat(testFederation.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testFederation.getAlias()).isEqualTo(UPDATED_ALIAS);
+        assertThat(testFederation.getFedimintId()).isEqualTo(UPDATED_FEDIMINT_ID);
+        assertThat(testFederation.getNumberOfNode()).isEqualTo(UPDATED_NUMBER_OF_NODE);
+        assertThat(testFederation.getBasePort()).isEqualTo(UPDATED_BASE_PORT);
+        assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(UPDATED_NUMBER_OF_REGISTERED_NODE);
         assertThat(testFederation.getActive()).isEqualTo(UPDATED_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
     }

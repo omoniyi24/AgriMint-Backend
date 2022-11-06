@@ -29,7 +29,13 @@ public class FederationCriteria implements Serializable, Criteria {
 
     private StringFilter name;
 
-    private StringFilter alias;
+    private StringFilter fedimintId;
+
+    private IntegerFilter numberOfNode;
+
+    private LongFilter basePort;
+
+    private IntegerFilter numberOfRegisteredNode;
 
     private BooleanFilter active;
 
@@ -40,7 +46,10 @@ public class FederationCriteria implements Serializable, Criteria {
     public FederationCriteria(FederationCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.name = other.name == null ? null : other.name.copy();
-        this.alias = other.alias == null ? null : other.alias.copy();
+        this.fedimintId = other.fedimintId == null ? null : other.fedimintId.copy();
+        this.numberOfNode = other.numberOfNode == null ? null : other.numberOfNode.copy();
+        this.basePort = other.basePort == null ? null : other.basePort.copy();
+        this.numberOfRegisteredNode = other.numberOfRegisteredNode == null ? null : other.numberOfRegisteredNode.copy();
         this.active = other.active == null ? null : other.active.copy();
         this.dateCreated = other.dateCreated == null ? null : other.dateCreated.copy();
     }
@@ -80,19 +89,64 @@ public class FederationCriteria implements Serializable, Criteria {
         this.name = name;
     }
 
-    public StringFilter getAlias() {
-        return alias;
+    public StringFilter getFedimintId() {
+        return fedimintId;
     }
 
-    public StringFilter alias() {
-        if (alias == null) {
-            alias = new StringFilter();
+    public StringFilter fedimintId() {
+        if (fedimintId == null) {
+            fedimintId = new StringFilter();
         }
-        return alias;
+        return fedimintId;
     }
 
-    public void setAlias(StringFilter alias) {
-        this.alias = alias;
+    public void setFedimintId(StringFilter fedimintId) {
+        this.fedimintId = fedimintId;
+    }
+
+    public IntegerFilter getNumberOfNode() {
+        return numberOfNode;
+    }
+
+    public IntegerFilter numberOfNode() {
+        if (numberOfNode == null) {
+            numberOfNode = new IntegerFilter();
+        }
+        return numberOfNode;
+    }
+
+    public void setNumberOfNode(IntegerFilter numberOfNode) {
+        this.numberOfNode = numberOfNode;
+    }
+
+    public LongFilter getBasePort() {
+        return basePort;
+    }
+
+    public LongFilter basePort() {
+        if (basePort == null) {
+            basePort = new LongFilter();
+        }
+        return basePort;
+    }
+
+    public void setBasePort(LongFilter basePort) {
+        this.basePort = basePort;
+    }
+
+    public IntegerFilter getNumberOfRegisteredNode() {
+        return numberOfRegisteredNode;
+    }
+
+    public IntegerFilter numberOfRegisteredNode() {
+        if (numberOfRegisteredNode == null) {
+            numberOfRegisteredNode = new IntegerFilter();
+        }
+        return numberOfRegisteredNode;
+    }
+
+    public void setNumberOfRegisteredNode(IntegerFilter numberOfRegisteredNode) {
+        this.numberOfRegisteredNode = numberOfRegisteredNode;
     }
 
     public BooleanFilter getActive() {
@@ -137,7 +191,10 @@ public class FederationCriteria implements Serializable, Criteria {
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
-            Objects.equals(alias, that.alias) &&
+            Objects.equals(fedimintId, that.fedimintId) &&
+            Objects.equals(numberOfNode, that.numberOfNode) &&
+            Objects.equals(basePort, that.basePort) &&
+            Objects.equals(numberOfRegisteredNode, that.numberOfRegisteredNode) &&
             Objects.equals(active, that.active) &&
             Objects.equals(dateCreated, that.dateCreated)
         );
@@ -145,7 +202,7 @@ public class FederationCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, alias, active, dateCreated);
+        return Objects.hash(id, name, fedimintId, numberOfNode, basePort, numberOfRegisteredNode, active, dateCreated);
     }
 
     // prettier-ignore
@@ -154,7 +211,10 @@ public class FederationCriteria implements Serializable, Criteria {
         return "FederationCriteria{" +
             (id != null ? "id=" + id + ", " : "") +
             (name != null ? "name=" + name + ", " : "") +
-            (alias != null ? "alias=" + alias + ", " : "") +
+            (fedimintId != null ? "fedimintId=" + fedimintId + ", " : "") +
+            (numberOfNode != null ? "numberOfNode=" + numberOfNode + ", " : "") +
+            (basePort != null ? "basePort=" + basePort + ", " : "") +
+            (numberOfRegisteredNode != null ? "numberOfRegisteredNode=" + numberOfRegisteredNode + ", " : "") +
             (active != null ? "active=" + active + ", " : "") +
             (dateCreated != null ? "dateCreated=" + dateCreated + ", " : "") +
             "}";

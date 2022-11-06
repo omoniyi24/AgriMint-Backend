@@ -89,8 +89,18 @@ public class FederationQueryService extends QueryService<Federation> {
             if (criteria.getName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getName(), Federation_.name));
             }
-            if (criteria.getAlias() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getAlias(), Federation_.alias));
+            if (criteria.getFedimintId() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getFedimintId(), Federation_.fedimintId));
+            }
+            if (criteria.getNumberOfNode() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getNumberOfNode(), Federation_.numberOfNode));
+            }
+            if (criteria.getBasePort() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getBasePort(), Federation_.basePort));
+            }
+            if (criteria.getNumberOfRegisteredNode() != null) {
+                specification =
+                    specification.and(buildRangeSpecification(criteria.getNumberOfRegisteredNode(), Federation_.numberOfRegisteredNode));
             }
             if (criteria.getActive() != null) {
                 specification = specification.and(buildSpecification(criteria.getActive(), Federation_.active));

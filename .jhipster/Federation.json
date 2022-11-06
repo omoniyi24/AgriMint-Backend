@@ -7,8 +7,24 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "alias",
-      "fieldType": "String"
+      "fieldName": "fedimintId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "numberOfNode",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "basePort",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "numberOfRegisteredNode",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "active",
