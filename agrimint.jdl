@@ -17,7 +17,7 @@ entity Guardian {
 
 entity Federation {
     name String required
-    alias String
+    numberOfNode Long required
     active Boolean required
     dateCreated Instant required
 }
