@@ -1,11 +1,10 @@
-FROM maven:3.6.0-jdk-11-slim AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
+FROM openjdk:11-jdk-alpine
 
-RUN dos2unix mvnw
-RUN mvnw clean install -DskipTests
+RUN mkdir -p /app
+#Set the current working directory inside the image
+WORKDIR /app
 
-FROM openjdk:11-slim
-COPY --from=build /home/app/target/agri-mint-0.0.1-SNAPSHOT.jar agri-mint-0.0.1-SNAPSHOT.jar
-EXPOSE 8081
-ENTRYPOINT ["java","-jar","agri-mint-0.0.1-SNAPSHOT.jar"]
+RUN /bin/sh -c "./mvnw clean install"
+ENTRYPOINT ["java","-jar","./target/agri-mint-0.0.1-SNAPSHOT.jar"]
+EXPOSE 8080
+
