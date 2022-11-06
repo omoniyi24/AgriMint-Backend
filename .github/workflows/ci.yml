@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: AgriMint CI with Maven
 
 on:
   push:
@@ -17,7 +17,10 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v3
