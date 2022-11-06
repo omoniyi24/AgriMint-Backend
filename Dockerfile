@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-alpine
+FROM openjdk:8-jdk-alpine
 
 RUN mkdir -p /app
 #Set the current working directory inside the image
