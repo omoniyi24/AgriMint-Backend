@@ -1,9 +1,7 @@
-FROM maven:3.6.3-openjdk-14-slim AS build
-RUN mkdir -p /workspace
-WORKDIR /workspace
-COPY pom.xml /workspace
-COPY src /workspace/src
-RUN mvnw clean install -DskipTests
+FROM maven:3.6.0-jdk-11-slim AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
 
 FROM openjdk:14-slim
 COPY --from=build /workspace/target/agri-mint-0.0.1-SNAPSHOT.jar agri-mint-0.0.1-SNAPSHOT.jar
