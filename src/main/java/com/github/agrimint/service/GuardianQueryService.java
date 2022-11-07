@@ -89,6 +89,12 @@ public class GuardianQueryService extends QueryService<Guardian> {
             if (criteria.getMemberId() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getMemberId(), Guardian_.memberId));
             }
+            if (criteria.getNodeNumber() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getNodeNumber(), Guardian_.nodeNumber));
+            }
+            if (criteria.getSecret() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getSecret(), Guardian_.secret));
+            }
             if (criteria.getInvitationSent() != null) {
                 specification = specification.and(buildSpecification(criteria.getInvitationSent(), Guardian_.invitationSent));
             }

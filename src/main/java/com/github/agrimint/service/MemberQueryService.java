@@ -89,11 +89,11 @@ public class MemberQueryService extends QueryService<Member> {
             if (criteria.getName() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getName(), Member_.name));
             }
-            if (criteria.getAlias() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getAlias(), Member_.alias));
-            }
             if (criteria.getFederationId() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getFederationId(), Member_.federationId));
+            }
+            if (criteria.getFedimintId() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getFedimintId(), Member_.fedimintId));
             }
             if (criteria.getPhoneNumber() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getPhoneNumber(), Member_.phoneNumber));

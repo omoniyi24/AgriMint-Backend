@@ -1,8 +1,6 @@
 package com.github.agrimint.extended.service.impl;
 
-import com.github.agrimint.extended.dto.CreateFedimintHttpRequest;
-import com.github.agrimint.extended.dto.CreateFedimintHttpResponse;
-import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
+import com.github.agrimint.extended.dto.*;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.google.gson.Gson;
@@ -32,6 +30,9 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     @Value("${fedimint.connectionUrl}")
     private String fedimintConnectionUrl;
 
+    @Value("${fedimint.createGuardianUrl}")
+    private String createGuardianUrl;
+
     public FedimintHttpServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         this.gson = new Gson();
@@ -58,7 +59,7 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    public GetConnectionFedimintHttpResponse getFederationConnection(String federationId) throws FederationExecption {
+    public GetConnectionFedimintHttpResponse getFederationConnectionString(String federationId) throws FederationExecption {
         String url = String.format(fedimintConnectionUrl, federationId);
         log.info("getFederationConnection request url {} ", url);
         try {
@@ -74,6 +75,27 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
                 log.info("getFederationConnection response body {} ", responsePayload);
                 Type targetClassType = new TypeToken<ArrayList<ArrayList<String>>>() {}.getType();
                 return gson.fromJson(responsePayload, targetClassType);
+            }
+            throw new FederationExecption("Failed to get Federation Connection");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FederationExecption("Error getting Federation Connection");
+        }
+    }
+
+    @Override
+    public CreateGuardianFedimintHttpResponse createGuardian(CreateGuardianFedimintHttpRequest createFedimintHttpRequest)
+        throws FederationExecption {
+        String payload = gson.toJson(createFedimintHttpRequest);
+        log.info("createGuardian request payload {} on url: {} ", payload, this.createGuardianUrl);
+        try {
+            HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());
+            ResponseEntity<String> postForEntity = restTemplate.postForEntity(this.createGuardianUrl, entity, String.class);
+            log.info("createGuardian RAW response payload {} ", postForEntity);
+            if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
+                String responsePayload = postForEntity.getBody();
+                log.info("createGuardian response body {} ", responsePayload);
+                return gson.fromJson(responsePayload, CreateGuardianFedimintHttpResponse.class);
             }
             throw new FederationExecption("Failed to get Federation Connection");
         } catch (Exception e) {

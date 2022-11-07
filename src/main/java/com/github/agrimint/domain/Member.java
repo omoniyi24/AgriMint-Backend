@@ -23,12 +23,13 @@ public class Member implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "alias")
-    private String alias;
-
     @NotNull
     @Column(name = "federation_id", nullable = false)
     private Long federationId;
+
+    @NotNull
+    @Column(name = "fedimint_id", nullable = false)
+    private String fedimintId;
 
     @NotNull
     @Column(name = "phone_number", nullable = false)
@@ -77,19 +78,6 @@ public class Member implements Serializable {
         this.name = name;
     }
 
-    public String getAlias() {
-        return this.alias;
-    }
-
-    public Member alias(String alias) {
-        this.alias = alias;
-        return this;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
     public Long getFederationId() {
         return this.federationId;
     }
@@ -101,6 +89,19 @@ public class Member implements Serializable {
 
     public void setFederationId(Long federationId) {
         this.federationId = federationId;
+    }
+
+    public String getFedimintId() {
+        return this.fedimintId;
+    }
+
+    public Member fedimintId(String fedimintId) {
+        this.fedimintId = fedimintId;
+        return this;
+    }
+
+    public void setFedimintId(String fedimintId) {
+        this.fedimintId = fedimintId;
     }
 
     public String getPhoneNumber() {
@@ -193,8 +194,8 @@ public class Member implements Serializable {
         return "Member{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", alias='" + getAlias() + "'" +
             ", federationId=" + getFederationId() +
+            ", fedimintId='" + getFedimintId() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", countryCode='" + getCountryCode() + "'" +
             ", active='" + getActive() + "'" +

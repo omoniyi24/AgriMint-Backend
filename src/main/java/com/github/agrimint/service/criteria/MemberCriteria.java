@@ -29,9 +29,9 @@ public class MemberCriteria implements Serializable, Criteria {
 
     private StringFilter name;
 
-    private StringFilter alias;
-
     private LongFilter federationId;
+
+    private StringFilter fedimintId;
 
     private StringFilter phoneNumber;
 
@@ -48,8 +48,8 @@ public class MemberCriteria implements Serializable, Criteria {
     public MemberCriteria(MemberCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.name = other.name == null ? null : other.name.copy();
-        this.alias = other.alias == null ? null : other.alias.copy();
         this.federationId = other.federationId == null ? null : other.federationId.copy();
+        this.fedimintId = other.fedimintId == null ? null : other.fedimintId.copy();
         this.phoneNumber = other.phoneNumber == null ? null : other.phoneNumber.copy();
         this.countryCode = other.countryCode == null ? null : other.countryCode.copy();
         this.active = other.active == null ? null : other.active.copy();
@@ -92,21 +92,6 @@ public class MemberCriteria implements Serializable, Criteria {
         this.name = name;
     }
 
-    public StringFilter getAlias() {
-        return alias;
-    }
-
-    public StringFilter alias() {
-        if (alias == null) {
-            alias = new StringFilter();
-        }
-        return alias;
-    }
-
-    public void setAlias(StringFilter alias) {
-        this.alias = alias;
-    }
-
     public LongFilter getFederationId() {
         return federationId;
     }
@@ -120,6 +105,21 @@ public class MemberCriteria implements Serializable, Criteria {
 
     public void setFederationId(LongFilter federationId) {
         this.federationId = federationId;
+    }
+
+    public StringFilter getFedimintId() {
+        return fedimintId;
+    }
+
+    public StringFilter fedimintId() {
+        if (fedimintId == null) {
+            fedimintId = new StringFilter();
+        }
+        return fedimintId;
+    }
+
+    public void setFedimintId(StringFilter fedimintId) {
+        this.fedimintId = fedimintId;
     }
 
     public StringFilter getPhoneNumber() {
@@ -209,8 +209,8 @@ public class MemberCriteria implements Serializable, Criteria {
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
-            Objects.equals(alias, that.alias) &&
             Objects.equals(federationId, that.federationId) &&
+            Objects.equals(fedimintId, that.fedimintId) &&
             Objects.equals(phoneNumber, that.phoneNumber) &&
             Objects.equals(countryCode, that.countryCode) &&
             Objects.equals(active, that.active) &&
@@ -221,7 +221,7 @@ public class MemberCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, alias, federationId, phoneNumber, countryCode, active, guardian, dateCreated);
+        return Objects.hash(id, name, federationId, fedimintId, phoneNumber, countryCode, active, guardian, dateCreated);
     }
 
     // prettier-ignore
@@ -230,8 +230,8 @@ public class MemberCriteria implements Serializable, Criteria {
         return "MemberCriteria{" +
             (id != null ? "id=" + id + ", " : "") +
             (name != null ? "name=" + name + ", " : "") +
-            (alias != null ? "alias=" + alias + ", " : "") +
             (federationId != null ? "federationId=" + federationId + ", " : "") +
+            (fedimintId != null ? "fedimintId=" + fedimintId + ", " : "") +
             (phoneNumber != null ? "phoneNumber=" + phoneNumber + ", " : "") +
             (countryCode != null ? "countryCode=" + countryCode + ", " : "") +
             (active != null ? "active=" + active + ", " : "") +

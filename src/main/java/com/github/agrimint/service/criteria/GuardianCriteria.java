@@ -28,6 +28,10 @@ public class GuardianCriteria implements Serializable, Criteria {
 
     private LongFilter memberId;
 
+    private IntegerFilter nodeNumber;
+
+    private IntegerFilter secret;
+
     private BooleanFilter invitationSent;
 
     private BooleanFilter invitationAccepted;
@@ -37,6 +41,8 @@ public class GuardianCriteria implements Serializable, Criteria {
     public GuardianCriteria(GuardianCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.memberId = other.memberId == null ? null : other.memberId.copy();
+        this.nodeNumber = other.nodeNumber == null ? null : other.nodeNumber.copy();
+        this.secret = other.secret == null ? null : other.secret.copy();
         this.invitationSent = other.invitationSent == null ? null : other.invitationSent.copy();
         this.invitationAccepted = other.invitationAccepted == null ? null : other.invitationAccepted.copy();
     }
@@ -74,6 +80,36 @@ public class GuardianCriteria implements Serializable, Criteria {
 
     public void setMemberId(LongFilter memberId) {
         this.memberId = memberId;
+    }
+
+    public IntegerFilter getNodeNumber() {
+        return nodeNumber;
+    }
+
+    public IntegerFilter nodeNumber() {
+        if (nodeNumber == null) {
+            nodeNumber = new IntegerFilter();
+        }
+        return nodeNumber;
+    }
+
+    public void setNodeNumber(IntegerFilter nodeNumber) {
+        this.nodeNumber = nodeNumber;
+    }
+
+    public IntegerFilter getSecret() {
+        return secret;
+    }
+
+    public IntegerFilter secret() {
+        if (secret == null) {
+            secret = new IntegerFilter();
+        }
+        return secret;
+    }
+
+    public void setSecret(IntegerFilter secret) {
+        this.secret = secret;
     }
 
     public BooleanFilter getInvitationSent() {
@@ -118,6 +154,8 @@ public class GuardianCriteria implements Serializable, Criteria {
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(memberId, that.memberId) &&
+            Objects.equals(nodeNumber, that.nodeNumber) &&
+            Objects.equals(secret, that.secret) &&
             Objects.equals(invitationSent, that.invitationSent) &&
             Objects.equals(invitationAccepted, that.invitationAccepted)
         );
@@ -125,7 +163,7 @@ public class GuardianCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, memberId, invitationSent, invitationAccepted);
+        return Objects.hash(id, memberId, nodeNumber, secret, invitationSent, invitationAccepted);
     }
 
     // prettier-ignore
@@ -134,6 +172,8 @@ public class GuardianCriteria implements Serializable, Criteria {
         return "GuardianCriteria{" +
             (id != null ? "id=" + id + ", " : "") +
             (memberId != null ? "memberId=" + memberId + ", " : "") +
+            (nodeNumber != null ? "nodeNumber=" + nodeNumber + ", " : "") +
+            (secret != null ? "secret=" + secret + ", " : "") +
             (invitationSent != null ? "invitationSent=" + invitationSent + ", " : "") +
             (invitationAccepted != null ? "invitationAccepted=" + invitationAccepted + ", " : "") +
             "}";

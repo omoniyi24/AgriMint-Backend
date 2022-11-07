@@ -37,12 +37,12 @@ class MemberResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ALIAS = "AAAAAAAAAA";
-    private static final String UPDATED_ALIAS = "BBBBBBBBBB";
-
     private static final Long DEFAULT_FEDERATION_ID = 1L;
     private static final Long UPDATED_FEDERATION_ID = 2L;
     private static final Long SMALLER_FEDERATION_ID = 1L - 1L;
+
+    private static final String DEFAULT_FEDIMINT_ID = "AAAAAAAAAA";
+    private static final String UPDATED_FEDIMINT_ID = "BBBBBBBBBB";
 
     private static final String DEFAULT_PHONE_NUMBER = "AAAAAAAAAA";
     private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
@@ -88,8 +88,8 @@ class MemberResourceIT {
     public static Member createEntity(EntityManager em) {
         Member member = new Member()
             .name(DEFAULT_NAME)
-            .alias(DEFAULT_ALIAS)
             .federationId(DEFAULT_FEDERATION_ID)
+            .fedimintId(DEFAULT_FEDIMINT_ID)
             .phoneNumber(DEFAULT_PHONE_NUMBER)
             .countryCode(DEFAULT_COUNTRY_CODE)
             .active(DEFAULT_ACTIVE)
@@ -107,8 +107,8 @@ class MemberResourceIT {
     public static Member createUpdatedEntity(EntityManager em) {
         Member member = new Member()
             .name(UPDATED_NAME)
-            .alias(UPDATED_ALIAS)
             .federationId(UPDATED_FEDERATION_ID)
+            .fedimintId(UPDATED_FEDIMINT_ID)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .countryCode(UPDATED_COUNTRY_CODE)
             .active(UPDATED_ACTIVE)
@@ -137,8 +137,8 @@ class MemberResourceIT {
         assertThat(memberList).hasSize(databaseSizeBeforeCreate + 1);
         Member testMember = memberList.get(memberList.size() - 1);
         assertThat(testMember.getName()).isEqualTo(DEFAULT_NAME);
-        assertThat(testMember.getAlias()).isEqualTo(DEFAULT_ALIAS);
         assertThat(testMember.getFederationId()).isEqualTo(DEFAULT_FEDERATION_ID);
+        assertThat(testMember.getFedimintId()).isEqualTo(DEFAULT_FEDIMINT_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(DEFAULT_ACTIVE);
@@ -189,6 +189,24 @@ class MemberResourceIT {
         int databaseSizeBeforeTest = memberRepository.findAll().size();
         // set the field null
         member.setFederationId(null);
+
+        // Create the Member, which fails.
+        MemberDTO memberDTO = memberMapper.toDto(member);
+
+        restMemberMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(memberDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Member> memberList = memberRepository.findAll();
+        assertThat(memberList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkFedimintIdIsRequired() throws Exception {
+        int databaseSizeBeforeTest = memberRepository.findAll().size();
+        // set the field null
+        member.setFedimintId(null);
 
         // Create the Member, which fails.
         MemberDTO memberDTO = memberMapper.toDto(member);
@@ -304,8 +322,8 @@ class MemberResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(member.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].alias").value(hasItem(DEFAULT_ALIAS)))
             .andExpect(jsonPath("$.[*].federationId").value(hasItem(DEFAULT_FEDERATION_ID.intValue())))
+            .andExpect(jsonPath("$.[*].fedimintId").value(hasItem(DEFAULT_FEDIMINT_ID)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
@@ -326,8 +344,8 @@ class MemberResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(member.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
-            .andExpect(jsonPath("$.alias").value(DEFAULT_ALIAS))
             .andExpect(jsonPath("$.federationId").value(DEFAULT_FEDERATION_ID.intValue()))
+            .andExpect(jsonPath("$.fedimintId").value(DEFAULT_FEDIMINT_ID))
             .andExpect(jsonPath("$.phoneNumber").value(DEFAULT_PHONE_NUMBER))
             .andExpect(jsonPath("$.countryCode").value(DEFAULT_COUNTRY_CODE))
             .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE.booleanValue()))
@@ -433,84 +451,6 @@ class MemberResourceIT {
 
     @Test
     @Transactional
-    void getAllMembersByAliasIsEqualToSomething() throws Exception {
-        // Initialize the database
-        memberRepository.saveAndFlush(member);
-
-        // Get all the memberList where alias equals to DEFAULT_ALIAS
-        defaultMemberShouldBeFound("alias.equals=" + DEFAULT_ALIAS);
-
-        // Get all the memberList where alias equals to UPDATED_ALIAS
-        defaultMemberShouldNotBeFound("alias.equals=" + UPDATED_ALIAS);
-    }
-
-    @Test
-    @Transactional
-    void getAllMembersByAliasIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        memberRepository.saveAndFlush(member);
-
-        // Get all the memberList where alias not equals to DEFAULT_ALIAS
-        defaultMemberShouldNotBeFound("alias.notEquals=" + DEFAULT_ALIAS);
-
-        // Get all the memberList where alias not equals to UPDATED_ALIAS
-        defaultMemberShouldBeFound("alias.notEquals=" + UPDATED_ALIAS);
-    }
-
-    @Test
-    @Transactional
-    void getAllMembersByAliasIsInShouldWork() throws Exception {
-        // Initialize the database
-        memberRepository.saveAndFlush(member);
-
-        // Get all the memberList where alias in DEFAULT_ALIAS or UPDATED_ALIAS
-        defaultMemberShouldBeFound("alias.in=" + DEFAULT_ALIAS + "," + UPDATED_ALIAS);
-
-        // Get all the memberList where alias equals to UPDATED_ALIAS
-        defaultMemberShouldNotBeFound("alias.in=" + UPDATED_ALIAS);
-    }
-
-    @Test
-    @Transactional
-    void getAllMembersByAliasIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        memberRepository.saveAndFlush(member);
-
-        // Get all the memberList where alias is not null
-        defaultMemberShouldBeFound("alias.specified=true");
-
-        // Get all the memberList where alias is null
-        defaultMemberShouldNotBeFound("alias.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllMembersByAliasContainsSomething() throws Exception {
-        // Initialize the database
-        memberRepository.saveAndFlush(member);
-
-        // Get all the memberList where alias contains DEFAULT_ALIAS
-        defaultMemberShouldBeFound("alias.contains=" + DEFAULT_ALIAS);
-
-        // Get all the memberList where alias contains UPDATED_ALIAS
-        defaultMemberShouldNotBeFound("alias.contains=" + UPDATED_ALIAS);
-    }
-
-    @Test
-    @Transactional
-    void getAllMembersByAliasNotContainsSomething() throws Exception {
-        // Initialize the database
-        memberRepository.saveAndFlush(member);
-
-        // Get all the memberList where alias does not contain DEFAULT_ALIAS
-        defaultMemberShouldNotBeFound("alias.doesNotContain=" + DEFAULT_ALIAS);
-
-        // Get all the memberList where alias does not contain UPDATED_ALIAS
-        defaultMemberShouldBeFound("alias.doesNotContain=" + UPDATED_ALIAS);
-    }
-
-    @Test
-    @Transactional
     void getAllMembersByFederationIdIsEqualToSomething() throws Exception {
         // Initialize the database
         memberRepository.saveAndFlush(member);
@@ -611,6 +551,84 @@ class MemberResourceIT {
 
         // Get all the memberList where federationId is greater than SMALLER_FEDERATION_ID
         defaultMemberShouldBeFound("federationId.greaterThan=" + SMALLER_FEDERATION_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByFedimintIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where fedimintId equals to DEFAULT_FEDIMINT_ID
+        defaultMemberShouldBeFound("fedimintId.equals=" + DEFAULT_FEDIMINT_ID);
+
+        // Get all the memberList where fedimintId equals to UPDATED_FEDIMINT_ID
+        defaultMemberShouldNotBeFound("fedimintId.equals=" + UPDATED_FEDIMINT_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByFedimintIdIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where fedimintId not equals to DEFAULT_FEDIMINT_ID
+        defaultMemberShouldNotBeFound("fedimintId.notEquals=" + DEFAULT_FEDIMINT_ID);
+
+        // Get all the memberList where fedimintId not equals to UPDATED_FEDIMINT_ID
+        defaultMemberShouldBeFound("fedimintId.notEquals=" + UPDATED_FEDIMINT_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByFedimintIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where fedimintId in DEFAULT_FEDIMINT_ID or UPDATED_FEDIMINT_ID
+        defaultMemberShouldBeFound("fedimintId.in=" + DEFAULT_FEDIMINT_ID + "," + UPDATED_FEDIMINT_ID);
+
+        // Get all the memberList where fedimintId equals to UPDATED_FEDIMINT_ID
+        defaultMemberShouldNotBeFound("fedimintId.in=" + UPDATED_FEDIMINT_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByFedimintIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where fedimintId is not null
+        defaultMemberShouldBeFound("fedimintId.specified=true");
+
+        // Get all the memberList where fedimintId is null
+        defaultMemberShouldNotBeFound("fedimintId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByFedimintIdContainsSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where fedimintId contains DEFAULT_FEDIMINT_ID
+        defaultMemberShouldBeFound("fedimintId.contains=" + DEFAULT_FEDIMINT_ID);
+
+        // Get all the memberList where fedimintId contains UPDATED_FEDIMINT_ID
+        defaultMemberShouldNotBeFound("fedimintId.contains=" + UPDATED_FEDIMINT_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByFedimintIdNotContainsSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where fedimintId does not contain DEFAULT_FEDIMINT_ID
+        defaultMemberShouldNotBeFound("fedimintId.doesNotContain=" + DEFAULT_FEDIMINT_ID);
+
+        // Get all the memberList where fedimintId does not contain UPDATED_FEDIMINT_ID
+        defaultMemberShouldBeFound("fedimintId.doesNotContain=" + UPDATED_FEDIMINT_ID);
     }
 
     @Test
@@ -935,8 +953,8 @@ class MemberResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(member.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].alias").value(hasItem(DEFAULT_ALIAS)))
             .andExpect(jsonPath("$.[*].federationId").value(hasItem(DEFAULT_FEDERATION_ID.intValue())))
+            .andExpect(jsonPath("$.[*].fedimintId").value(hasItem(DEFAULT_FEDIMINT_ID)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
@@ -991,8 +1009,8 @@ class MemberResourceIT {
         em.detach(updatedMember);
         updatedMember
             .name(UPDATED_NAME)
-            .alias(UPDATED_ALIAS)
             .federationId(UPDATED_FEDERATION_ID)
+            .fedimintId(UPDATED_FEDIMINT_ID)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .countryCode(UPDATED_COUNTRY_CODE)
             .active(UPDATED_ACTIVE)
@@ -1013,8 +1031,8 @@ class MemberResourceIT {
         assertThat(memberList).hasSize(databaseSizeBeforeUpdate);
         Member testMember = memberList.get(memberList.size() - 1);
         assertThat(testMember.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testMember.getAlias()).isEqualTo(UPDATED_ALIAS);
         assertThat(testMember.getFederationId()).isEqualTo(UPDATED_FEDERATION_ID);
+        assertThat(testMember.getFedimintId()).isEqualTo(UPDATED_FEDIMINT_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(UPDATED_ACTIVE);
@@ -1114,8 +1132,8 @@ class MemberResourceIT {
         assertThat(memberList).hasSize(databaseSizeBeforeUpdate);
         Member testMember = memberList.get(memberList.size() - 1);
         assertThat(testMember.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testMember.getAlias()).isEqualTo(DEFAULT_ALIAS);
         assertThat(testMember.getFederationId()).isEqualTo(DEFAULT_FEDERATION_ID);
+        assertThat(testMember.getFedimintId()).isEqualTo(DEFAULT_FEDIMINT_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(DEFAULT_ACTIVE);
@@ -1137,8 +1155,8 @@ class MemberResourceIT {
 
         partialUpdatedMember
             .name(UPDATED_NAME)
-            .alias(UPDATED_ALIAS)
             .federationId(UPDATED_FEDERATION_ID)
+            .fedimintId(UPDATED_FEDIMINT_ID)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .countryCode(UPDATED_COUNTRY_CODE)
             .active(UPDATED_ACTIVE)
@@ -1158,8 +1176,8 @@ class MemberResourceIT {
         assertThat(memberList).hasSize(databaseSizeBeforeUpdate);
         Member testMember = memberList.get(memberList.size() - 1);
         assertThat(testMember.getName()).isEqualTo(UPDATED_NAME);
-        assertThat(testMember.getAlias()).isEqualTo(UPDATED_ALIAS);
         assertThat(testMember.getFederationId()).isEqualTo(UPDATED_FEDERATION_ID);
+        assertThat(testMember.getFedimintId()).isEqualTo(UPDATED_FEDIMINT_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(UPDATED_ACTIVE);

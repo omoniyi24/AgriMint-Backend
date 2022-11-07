@@ -1,7 +1,7 @@
 entity Member {
     name String required
-    alias String
     federationId Long required
+    fedimintId String required
     phoneNumber String required
     countryCode String required
     active Boolean required
@@ -11,6 +11,8 @@ entity Member {
 
 entity Guardian {
     memberId Long required
+    nodeNumber Integer required
+    secret Integer required
     invitationSent Boolean required
     invitationAccepted Boolean required
 }

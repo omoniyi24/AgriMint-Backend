@@ -7,12 +7,13 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "alias",
-      "fieldType": "String"
-    },
-    {
       "fieldName": "federationId",
       "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "fedimintId",
+      "fieldType": "String",
       "fieldValidateRules": ["required"]
     },
     {

@@ -75,7 +75,7 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
     public GetConnectionFedimintHttpResponse getFederationConnection(Long id) throws FederationExecption {
         Optional<FederationDTO> federationDTO = federationService.findOne(id);
         if (federationDTO.isPresent()) {
-            return fedimintHttpService.getFederationConnection(federationDTO.get().getFedimintId());
+            return fedimintHttpService.getFederationConnectionString(federationDTO.get().getFedimintId());
         }
         throw new FederationExecption("Federation does not Exist");
     }
