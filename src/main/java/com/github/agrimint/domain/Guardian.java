@@ -23,6 +23,14 @@ public class Guardian implements Serializable {
     private Long memberId;
 
     @NotNull
+    @Column(name = "node_number", nullable = false)
+    private Integer nodeNumber;
+
+    @NotNull
+    @Column(name = "secret", nullable = false)
+    private Integer secret;
+
+    @NotNull
     @Column(name = "invitation_sent", nullable = false)
     private Boolean invitationSent;
 
@@ -55,6 +63,32 @@ public class Guardian implements Serializable {
 
     public void setMemberId(Long memberId) {
         this.memberId = memberId;
+    }
+
+    public Integer getNodeNumber() {
+        return this.nodeNumber;
+    }
+
+    public Guardian nodeNumber(Integer nodeNumber) {
+        this.nodeNumber = nodeNumber;
+        return this;
+    }
+
+    public void setNodeNumber(Integer nodeNumber) {
+        this.nodeNumber = nodeNumber;
+    }
+
+    public Integer getSecret() {
+        return this.secret;
+    }
+
+    public Guardian secret(Integer secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    public void setSecret(Integer secret) {
+        this.secret = secret;
     }
 
     public Boolean getInvitationSent() {
@@ -108,6 +142,8 @@ public class Guardian implements Serializable {
         return "Guardian{" +
             "id=" + getId() +
             ", memberId=" + getMemberId() +
+            ", nodeNumber=" + getNodeNumber() +
+            ", secret=" + getSecret() +
             ", invitationSent='" + getInvitationSent() + "'" +
             ", invitationAccepted='" + getInvitationAccepted() + "'" +
             "}";

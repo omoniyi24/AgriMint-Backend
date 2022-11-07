@@ -17,6 +17,12 @@
             <column name="member_id" type="bigint">
                 <constraints nullable="false" />
             </column>
+            <column name="node_number" type="integer">
+                <constraints nullable="false" />
+            </column>
+            <column name="secret" type="integer">
+                <constraints nullable="false" />
+            </column>
             <column name="invitation_sent" type="boolean">
                 <constraints nullable="false" />
             </column>
@@ -44,6 +50,8 @@
                   tableName="guardian">
             <column name="id" type="numeric"/>
             <column name="member_id" type="numeric"/>
+            <column name="node_number" type="numeric"/>
+            <column name="secret" type="numeric"/>
             <column name="invitation_sent" type="boolean"/>
             <column name="invitation_accepted" type="boolean"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->

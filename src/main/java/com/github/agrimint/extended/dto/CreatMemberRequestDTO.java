@@ -26,4 +26,8 @@ public class CreatMemberRequestDTO implements Serializable {
 
     @NotNull
     private String countryCode;
+
+    private Integer nodeNumber;
+
+    private Integer secret;
 }

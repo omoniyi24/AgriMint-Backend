@@ -15,6 +15,12 @@ public class GuardianDTO implements Serializable {
     private Long memberId;
 
     @NotNull
+    private Integer nodeNumber;
+
+    @NotNull
+    private Integer secret;
+
+    @NotNull
     private Boolean invitationSent;
 
     @NotNull
@@ -34,6 +40,22 @@ public class GuardianDTO implements Serializable {
 
     public void setMemberId(Long memberId) {
         this.memberId = memberId;
+    }
+
+    public Integer getNodeNumber() {
+        return nodeNumber;
+    }
+
+    public void setNodeNumber(Integer nodeNumber) {
+        this.nodeNumber = nodeNumber;
+    }
+
+    public Integer getSecret() {
+        return secret;
+    }
+
+    public void setSecret(Integer secret) {
+        this.secret = secret;
     }
 
     public Boolean getInvitationSent() {
@@ -79,6 +101,8 @@ public class GuardianDTO implements Serializable {
         return "GuardianDTO{" +
             "id=" + getId() +
             ", memberId=" + getMemberId() +
+            ", nodeNumber=" + getNodeNumber() +
+            ", secret=" + getSecret() +
             ", invitationSent='" + getInvitationSent() + "'" +
             ", invitationAccepted='" + getInvitationAccepted() + "'" +
             "}";

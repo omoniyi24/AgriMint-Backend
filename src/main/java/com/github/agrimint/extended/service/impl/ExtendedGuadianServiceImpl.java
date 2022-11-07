@@ -3,16 +3,23 @@ package com.github.agrimint.extended.service.impl;
 import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_WITH_ID_DOES_NOT_EXIST;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
+import com.github.agrimint.extended.dto.CreateFedimintHttpRequest;
+import com.github.agrimint.extended.dto.CreateGuardianFedimintHttpRequest;
+import com.github.agrimint.extended.dto.CreateGuardianFedimintHttpResponse;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
+import com.github.agrimint.extended.service.FedimintHttpService;
+import com.github.agrimint.extended.util.FedimintUtil;
 import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.GuardianService;
 import com.github.agrimint.service.MemberService;
+import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.GuardianDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
+import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,24 +33,36 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
     private final GuardianService guardianService;
     private final FederationService federationService;
     private final QueryUtil queryUtil;
+    private final FedimintUtil fedimintUtil;
+    private final FedimintHttpService fedimintHttpService;
 
     public ExtendedGuadianServiceImpl(
         MemberService memberService,
         GuardianService guardianService,
         FederationService federationService,
-        QueryUtil queryUtil
+        QueryUtil queryUtil,
+        FedimintUtil fedimintUtil,
+        FedimintHttpService fedimintHttpService
     ) {
         this.memberService = memberService;
         this.guardianService = guardianService;
         this.federationService = federationService;
         this.queryUtil = queryUtil;
+        this.fedimintUtil = fedimintUtil;
+        this.fedimintHttpService = fedimintHttpService;
     }
 
     @Override
     public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO) throws MemberAlreadyExistExecption, FederationExecption {
-        if (federationService.findOne(creatGuardianRequestDTO.getFederationId()).isEmpty()) {
+        Optional<FederationDTO> guradianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
+        if (guradianFed.isEmpty()) {
             throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatGuardianRequestDTO.getFederationId()));
         }
+        CreateGuardianFedimintHttpRequest createFedimintHttpRequest = fedimintUtil.convertToFedimintRequest(
+            creatGuardianRequestDTO,
+            guradianFed.get()
+        );
+        CreateGuardianFedimintHttpResponse guardian = fedimintHttpService.createGuardian(createFedimintHttpRequest);
         MemberDTO memberDTO = new MemberDTO();
         BeanUtils.copyProperties(creatGuardianRequestDTO, memberDTO);
         memberDTO.setActive(true);
@@ -55,6 +74,8 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
             guardianDTO.setMemberId(memberDTO.getId());
             guardianDTO.setInvitationAccepted(false);
             guardianDTO.setInvitationSent(false);
+            guardianDTO.setSecret(creatGuardianRequestDTO.getSecret());
+            guardianDTO.setNodeNumber(creatGuardianRequestDTO.getNodeNumber());
             guardianService.save(guardianDTO);
         }
         queryUtil.persistFederationMember(creatGuardianRequestDTO.getFederationId(), memberDTO.getId());

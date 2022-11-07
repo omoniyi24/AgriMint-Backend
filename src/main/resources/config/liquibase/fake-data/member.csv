@@ -1,11 +1,11 @@
-id;name;alias;federation_id;phone_number;country_code;active;guardian;date_created
-1;dot-com Ergonomic client-server;Corporate Intranet AGP;31337;Open-source reboot;BQ;true;false;2022-11-04T17:43:24
-2;purple;up Computer;33845;facilitate Optimization;CK;false;false;2022-11-04T08:02:32
-3;Ball;Wooden Practical feed;94015;transmitting withdrawal;TN;false;false;2022-11-04T20:13:30
-4;Automotive payment;Planner collaborative Forint;16729;Keyboard Integration;DE;false;true;2022-11-04T18:13:01
-5;rich Lake;withdrawal drive;89190;green Future Keyboard;CM;true;true;2022-11-04T20:03:28
-6;CSS logistical;support logistical real-time;35514;Mauritania;AO;false;true;2022-11-04T17:53:26
-7;Parks Senior;systems Avon Somoni;72858;deposit Keyboard killer;BT;false;false;2022-11-03T23:44:14
-8;Future optical Cotton;Dollar;9464;Fresh Account;IN;true;true;2022-11-04T11:22:09
-9;silver Berkshire;Books overriding Montana;37976;Account Greens;AT;false;false;2022-11-04T04:26:47
-10;ROI;Massachusetts Practical Krona;8277;Home monitor;GT;false;false;2022-11-04T00:14:05
+id;name;federation_id;fedimint_id;phone_number;country_code;active;guardian;date_created
+1;dot-com Ergonomic client-server;82484;Shoes California holistic;Open-source reboot;BQ;true;false;2022-11-04T17:43:24
+2;purple;50495;Beauty Awesome Islands;Optimization Computer;MA;false;false;2022-11-04T07:12:15
+3;user-facing Wooden Practical;70625;user-facing transmitting withdrawal;Granite Angola Tuna;CF;true;true;2022-11-04T07:27:53
+4;collaborative Forint;16729;Keyboard Integration;User-centric;NF;false;true;2022-11-04T04:50:08
+5;e-business withdrawal;72133;reboot green;Cross-group Wyoming Directives;SL;false;true;2022-11-04T00:09:00
+6;Sterling;60632;support logistical real-time;Beauty Alaska;LA;false;false;2022-11-04T09:46:42
+7;invoice Licensed;49274;Metal;capacitor Cotton fault-tolerant;TF;false;false;2022-11-04T12:38:04
+8;Small;72552;Fundamental JBOD Cotton;Public-key bypassing;BZ;true;true;2022-11-04T06:56:19
+9;system;52388;Bedfordshire Denar;Supervisor Internal;GN;true;true;2022-11-03T23:18:56
+10;New Architect;41663;Grocery;ROI;NZ;true;false;2022-11-04T06:15:07

@@ -84,7 +84,7 @@ public class ExtendedFederationResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping("/federations/{id}/connection")
+    @GetMapping("/federation/{id}/connection")
     public ResponseEntity<GetConnectionFedimintHttpResponse> getFederationConnection(@PathVariable Long id) throws FederationExecption {
         log.debug("REST request to get Federation Connection : {}", id);
         GetConnectionFedimintHttpResponse federationConnection = federationService.getFederationConnection(id);

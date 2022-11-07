@@ -36,6 +36,14 @@ class GuardianResourceIT {
     private static final Long UPDATED_MEMBER_ID = 2L;
     private static final Long SMALLER_MEMBER_ID = 1L - 1L;
 
+    private static final Integer DEFAULT_NODE_NUMBER = 1;
+    private static final Integer UPDATED_NODE_NUMBER = 2;
+    private static final Integer SMALLER_NODE_NUMBER = 1 - 1;
+
+    private static final Integer DEFAULT_SECRET = 1;
+    private static final Integer UPDATED_SECRET = 2;
+    private static final Integer SMALLER_SECRET = 1 - 1;
+
     private static final Boolean DEFAULT_INVITATION_SENT = false;
     private static final Boolean UPDATED_INVITATION_SENT = true;
 
@@ -71,6 +79,8 @@ class GuardianResourceIT {
     public static Guardian createEntity(EntityManager em) {
         Guardian guardian = new Guardian()
             .memberId(DEFAULT_MEMBER_ID)
+            .nodeNumber(DEFAULT_NODE_NUMBER)
+            .secret(DEFAULT_SECRET)
             .invitationSent(DEFAULT_INVITATION_SENT)
             .invitationAccepted(DEFAULT_INVITATION_ACCEPTED);
         return guardian;
@@ -85,6 +95,8 @@ class GuardianResourceIT {
     public static Guardian createUpdatedEntity(EntityManager em) {
         Guardian guardian = new Guardian()
             .memberId(UPDATED_MEMBER_ID)
+            .nodeNumber(UPDATED_NODE_NUMBER)
+            .secret(UPDATED_SECRET)
             .invitationSent(UPDATED_INVITATION_SENT)
             .invitationAccepted(UPDATED_INVITATION_ACCEPTED);
         return guardian;
@@ -110,6 +122,8 @@ class GuardianResourceIT {
         assertThat(guardianList).hasSize(databaseSizeBeforeCreate + 1);
         Guardian testGuardian = guardianList.get(guardianList.size() - 1);
         assertThat(testGuardian.getMemberId()).isEqualTo(DEFAULT_MEMBER_ID);
+        assertThat(testGuardian.getNodeNumber()).isEqualTo(DEFAULT_NODE_NUMBER);
+        assertThat(testGuardian.getSecret()).isEqualTo(DEFAULT_SECRET);
         assertThat(testGuardian.getInvitationSent()).isEqualTo(DEFAULT_INVITATION_SENT);
         assertThat(testGuardian.getInvitationAccepted()).isEqualTo(DEFAULT_INVITATION_ACCEPTED);
     }
@@ -139,6 +153,42 @@ class GuardianResourceIT {
         int databaseSizeBeforeTest = guardianRepository.findAll().size();
         // set the field null
         guardian.setMemberId(null);
+
+        // Create the Guardian, which fails.
+        GuardianDTO guardianDTO = guardianMapper.toDto(guardian);
+
+        restGuardianMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(guardianDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Guardian> guardianList = guardianRepository.findAll();
+        assertThat(guardianList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkNodeNumberIsRequired() throws Exception {
+        int databaseSizeBeforeTest = guardianRepository.findAll().size();
+        // set the field null
+        guardian.setNodeNumber(null);
+
+        // Create the Guardian, which fails.
+        GuardianDTO guardianDTO = guardianMapper.toDto(guardian);
+
+        restGuardianMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(guardianDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Guardian> guardianList = guardianRepository.findAll();
+        assertThat(guardianList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkSecretIsRequired() throws Exception {
+        int databaseSizeBeforeTest = guardianRepository.findAll().size();
+        // set the field null
+        guardian.setSecret(null);
 
         // Create the Guardian, which fails.
         GuardianDTO guardianDTO = guardianMapper.toDto(guardian);
@@ -200,6 +250,8 @@ class GuardianResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(guardian.getId().intValue())))
             .andExpect(jsonPath("$.[*].memberId").value(hasItem(DEFAULT_MEMBER_ID.intValue())))
+            .andExpect(jsonPath("$.[*].nodeNumber").value(hasItem(DEFAULT_NODE_NUMBER)))
+            .andExpect(jsonPath("$.[*].secret").value(hasItem(DEFAULT_SECRET)))
             .andExpect(jsonPath("$.[*].invitationSent").value(hasItem(DEFAULT_INVITATION_SENT.booleanValue())))
             .andExpect(jsonPath("$.[*].invitationAccepted").value(hasItem(DEFAULT_INVITATION_ACCEPTED.booleanValue())));
     }
@@ -217,6 +269,8 @@ class GuardianResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(guardian.getId().intValue()))
             .andExpect(jsonPath("$.memberId").value(DEFAULT_MEMBER_ID.intValue()))
+            .andExpect(jsonPath("$.nodeNumber").value(DEFAULT_NODE_NUMBER))
+            .andExpect(jsonPath("$.secret").value(DEFAULT_SECRET))
             .andExpect(jsonPath("$.invitationSent").value(DEFAULT_INVITATION_SENT.booleanValue()))
             .andExpect(jsonPath("$.invitationAccepted").value(DEFAULT_INVITATION_ACCEPTED.booleanValue()));
     }
@@ -345,6 +399,214 @@ class GuardianResourceIT {
 
     @Test
     @Transactional
+    void getAllGuardiansByNodeNumberIsEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber equals to DEFAULT_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.equals=" + DEFAULT_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber equals to UPDATED_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.equals=" + UPDATED_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber not equals to DEFAULT_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.notEquals=" + DEFAULT_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber not equals to UPDATED_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.notEquals=" + UPDATED_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsInShouldWork() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber in DEFAULT_NODE_NUMBER or UPDATED_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.in=" + DEFAULT_NODE_NUMBER + "," + UPDATED_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber equals to UPDATED_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.in=" + UPDATED_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber is not null
+        defaultGuardianShouldBeFound("nodeNumber.specified=true");
+
+        // Get all the guardianList where nodeNumber is null
+        defaultGuardianShouldNotBeFound("nodeNumber.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber is greater than or equal to DEFAULT_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.greaterThanOrEqual=" + DEFAULT_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber is greater than or equal to UPDATED_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.greaterThanOrEqual=" + UPDATED_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber is less than or equal to DEFAULT_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.lessThanOrEqual=" + DEFAULT_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber is less than or equal to SMALLER_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.lessThanOrEqual=" + SMALLER_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsLessThanSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber is less than DEFAULT_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.lessThan=" + DEFAULT_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber is less than UPDATED_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.lessThan=" + UPDATED_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansByNodeNumberIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where nodeNumber is greater than DEFAULT_NODE_NUMBER
+        defaultGuardianShouldNotBeFound("nodeNumber.greaterThan=" + DEFAULT_NODE_NUMBER);
+
+        // Get all the guardianList where nodeNumber is greater than SMALLER_NODE_NUMBER
+        defaultGuardianShouldBeFound("nodeNumber.greaterThan=" + SMALLER_NODE_NUMBER);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret equals to DEFAULT_SECRET
+        defaultGuardianShouldBeFound("secret.equals=" + DEFAULT_SECRET);
+
+        // Get all the guardianList where secret equals to UPDATED_SECRET
+        defaultGuardianShouldNotBeFound("secret.equals=" + UPDATED_SECRET);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret not equals to DEFAULT_SECRET
+        defaultGuardianShouldNotBeFound("secret.notEquals=" + DEFAULT_SECRET);
+
+        // Get all the guardianList where secret not equals to UPDATED_SECRET
+        defaultGuardianShouldBeFound("secret.notEquals=" + UPDATED_SECRET);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsInShouldWork() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret in DEFAULT_SECRET or UPDATED_SECRET
+        defaultGuardianShouldBeFound("secret.in=" + DEFAULT_SECRET + "," + UPDATED_SECRET);
+
+        // Get all the guardianList where secret equals to UPDATED_SECRET
+        defaultGuardianShouldNotBeFound("secret.in=" + UPDATED_SECRET);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret is not null
+        defaultGuardianShouldBeFound("secret.specified=true");
+
+        // Get all the guardianList where secret is null
+        defaultGuardianShouldNotBeFound("secret.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret is greater than or equal to DEFAULT_SECRET
+        defaultGuardianShouldBeFound("secret.greaterThanOrEqual=" + DEFAULT_SECRET);
+
+        // Get all the guardianList where secret is greater than or equal to UPDATED_SECRET
+        defaultGuardianShouldNotBeFound("secret.greaterThanOrEqual=" + UPDATED_SECRET);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret is less than or equal to DEFAULT_SECRET
+        defaultGuardianShouldBeFound("secret.lessThanOrEqual=" + DEFAULT_SECRET);
+
+        // Get all the guardianList where secret is less than or equal to SMALLER_SECRET
+        defaultGuardianShouldNotBeFound("secret.lessThanOrEqual=" + SMALLER_SECRET);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsLessThanSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret is less than DEFAULT_SECRET
+        defaultGuardianShouldNotBeFound("secret.lessThan=" + DEFAULT_SECRET);
+
+        // Get all the guardianList where secret is less than UPDATED_SECRET
+        defaultGuardianShouldBeFound("secret.lessThan=" + UPDATED_SECRET);
+    }
+
+    @Test
+    @Transactional
+    void getAllGuardiansBySecretIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        guardianRepository.saveAndFlush(guardian);
+
+        // Get all the guardianList where secret is greater than DEFAULT_SECRET
+        defaultGuardianShouldNotBeFound("secret.greaterThan=" + DEFAULT_SECRET);
+
+        // Get all the guardianList where secret is greater than SMALLER_SECRET
+        defaultGuardianShouldBeFound("secret.greaterThan=" + SMALLER_SECRET);
+    }
+
+    @Test
+    @Transactional
     void getAllGuardiansByInvitationSentIsEqualToSomething() throws Exception {
         // Initialize the database
         guardianRepository.saveAndFlush(guardian);
@@ -457,6 +719,8 @@ class GuardianResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(guardian.getId().intValue())))
             .andExpect(jsonPath("$.[*].memberId").value(hasItem(DEFAULT_MEMBER_ID.intValue())))
+            .andExpect(jsonPath("$.[*].nodeNumber").value(hasItem(DEFAULT_NODE_NUMBER)))
+            .andExpect(jsonPath("$.[*].secret").value(hasItem(DEFAULT_SECRET)))
             .andExpect(jsonPath("$.[*].invitationSent").value(hasItem(DEFAULT_INVITATION_SENT.booleanValue())))
             .andExpect(jsonPath("$.[*].invitationAccepted").value(hasItem(DEFAULT_INVITATION_ACCEPTED.booleanValue())));
 
@@ -506,7 +770,12 @@ class GuardianResourceIT {
         Guardian updatedGuardian = guardianRepository.findById(guardian.getId()).get();
         // Disconnect from session so that the updates on updatedGuardian are not directly saved in db
         em.detach(updatedGuardian);
-        updatedGuardian.memberId(UPDATED_MEMBER_ID).invitationSent(UPDATED_INVITATION_SENT).invitationAccepted(UPDATED_INVITATION_ACCEPTED);
+        updatedGuardian
+            .memberId(UPDATED_MEMBER_ID)
+            .nodeNumber(UPDATED_NODE_NUMBER)
+            .secret(UPDATED_SECRET)
+            .invitationSent(UPDATED_INVITATION_SENT)
+            .invitationAccepted(UPDATED_INVITATION_ACCEPTED);
         GuardianDTO guardianDTO = guardianMapper.toDto(updatedGuardian);
 
         restGuardianMockMvc
@@ -522,6 +791,8 @@ class GuardianResourceIT {
         assertThat(guardianList).hasSize(databaseSizeBeforeUpdate);
         Guardian testGuardian = guardianList.get(guardianList.size() - 1);
         assertThat(testGuardian.getMemberId()).isEqualTo(UPDATED_MEMBER_ID);
+        assertThat(testGuardian.getNodeNumber()).isEqualTo(UPDATED_NODE_NUMBER);
+        assertThat(testGuardian.getSecret()).isEqualTo(UPDATED_SECRET);
         assertThat(testGuardian.getInvitationSent()).isEqualTo(UPDATED_INVITATION_SENT);
         assertThat(testGuardian.getInvitationAccepted()).isEqualTo(UPDATED_INVITATION_ACCEPTED);
     }
@@ -603,7 +874,7 @@ class GuardianResourceIT {
         Guardian partialUpdatedGuardian = new Guardian();
         partialUpdatedGuardian.setId(guardian.getId());
 
-        partialUpdatedGuardian.memberId(UPDATED_MEMBER_ID);
+        partialUpdatedGuardian.memberId(UPDATED_MEMBER_ID).invitationAccepted(UPDATED_INVITATION_ACCEPTED);
 
         restGuardianMockMvc
             .perform(
@@ -618,8 +889,10 @@ class GuardianResourceIT {
         assertThat(guardianList).hasSize(databaseSizeBeforeUpdate);
         Guardian testGuardian = guardianList.get(guardianList.size() - 1);
         assertThat(testGuardian.getMemberId()).isEqualTo(UPDATED_MEMBER_ID);
+        assertThat(testGuardian.getNodeNumber()).isEqualTo(DEFAULT_NODE_NUMBER);
+        assertThat(testGuardian.getSecret()).isEqualTo(DEFAULT_SECRET);
         assertThat(testGuardian.getInvitationSent()).isEqualTo(DEFAULT_INVITATION_SENT);
-        assertThat(testGuardian.getInvitationAccepted()).isEqualTo(DEFAULT_INVITATION_ACCEPTED);
+        assertThat(testGuardian.getInvitationAccepted()).isEqualTo(UPDATED_INVITATION_ACCEPTED);
     }
 
     @Test
@@ -636,6 +909,8 @@ class GuardianResourceIT {
 
         partialUpdatedGuardian
             .memberId(UPDATED_MEMBER_ID)
+            .nodeNumber(UPDATED_NODE_NUMBER)
+            .secret(UPDATED_SECRET)
             .invitationSent(UPDATED_INVITATION_SENT)
             .invitationAccepted(UPDATED_INVITATION_ACCEPTED);
 
@@ -652,6 +927,8 @@ class GuardianResourceIT {
         assertThat(guardianList).hasSize(databaseSizeBeforeUpdate);
         Guardian testGuardian = guardianList.get(guardianList.size() - 1);
         assertThat(testGuardian.getMemberId()).isEqualTo(UPDATED_MEMBER_ID);
+        assertThat(testGuardian.getNodeNumber()).isEqualTo(UPDATED_NODE_NUMBER);
+        assertThat(testGuardian.getSecret()).isEqualTo(UPDATED_SECRET);
         assertThat(testGuardian.getInvitationSent()).isEqualTo(UPDATED_INVITATION_SENT);
         assertThat(testGuardian.getInvitationAccepted()).isEqualTo(UPDATED_INVITATION_ACCEPTED);
     }

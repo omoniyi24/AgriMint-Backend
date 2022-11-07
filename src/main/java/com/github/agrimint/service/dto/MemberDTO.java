@@ -15,10 +15,11 @@ public class MemberDTO implements Serializable {
     @NotNull
     private String name;
 
-    private String alias;
-
     @NotNull
     private Long federationId;
+
+    @NotNull
+    private String fedimintId;
 
     @NotNull
     private String phoneNumber;
@@ -51,20 +52,20 @@ public class MemberDTO implements Serializable {
         this.name = name;
     }
 
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
     public Long getFederationId() {
         return federationId;
     }
 
     public void setFederationId(Long federationId) {
         this.federationId = federationId;
+    }
+
+    public String getFedimintId() {
+        return fedimintId;
+    }
+
+    public void setFedimintId(String fedimintId) {
+        this.fedimintId = fedimintId;
     }
 
     public String getPhoneNumber() {
@@ -134,8 +135,8 @@ public class MemberDTO implements Serializable {
         return "MemberDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", alias='" + getAlias() + "'" +
             ", federationId=" + getFederationId() +
+            ", fedimintId='" + getFedimintId() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", countryCode='" + getCountryCode() + "'" +
             ", active='" + getActive() + "'" +

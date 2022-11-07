@@ -7,6 +7,16 @@
       "fieldValidateRules": ["required"]
     },
     {
+      "fieldName": "nodeNumber",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "secret",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
       "fieldName": "invitationSent",
       "fieldType": "Boolean",
       "fieldValidateRules": ["required"]
