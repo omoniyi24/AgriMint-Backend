@@ -1,6 +1,7 @@
 package com.github.agrimint.extended.resources;
 
 import com.github.agrimint.extended.dto.CreateFederationRequestDTO;
+import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.service.ExtendedFederationService;
 import com.github.agrimint.repository.FederationRepository;
@@ -81,5 +82,12 @@ public class ExtendedFederationResource {
         Page<FederationDTO> page = federationService.getAll(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/federations/{id}/connection")
+    public ResponseEntity<GetConnectionFedimintHttpResponse> getFederationConnection(@PathVariable Long id) throws FederationExecption {
+        log.debug("REST request to get Federation Connection : {}", id);
+        GetConnectionFedimintHttpResponse federationConnection = federationService.getFederationConnection(id);
+        return ResponseEntity.ok().body(federationConnection);
     }
 }

@@ -124,4 +124,6 @@ jhipster:
 # application:
 
 fedimint:
-  createFedimintUrl: http://46.101.210.143:3000/api/federations
+  baseUrl: 'http://46.101.210.143:3000/api/federations'
+  createFederationUrl: ${fedimint.baseUrl}
+  connectionUrl: ${fedimint.baseUrl}/%s/connection-info

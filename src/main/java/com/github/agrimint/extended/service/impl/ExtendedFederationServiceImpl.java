@@ -3,6 +3,7 @@ package com.github.agrimint.extended.service.impl;
 import com.github.agrimint.extended.dto.CreateFederationRequestDTO;
 import com.github.agrimint.extended.dto.CreateFedimintHttpRequest;
 import com.github.agrimint.extended.dto.CreateFedimintHttpResponse;
+import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
 import com.github.agrimint.extended.service.ExtendedFederationService;
@@ -15,6 +16,7 @@ import com.github.agrimint.service.criteria.FederationCriteria;
 import com.github.agrimint.service.dto.FederationDTO;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -67,5 +69,14 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
     @Override
     public Page<FederationDTO> getAll(FederationCriteria criteria, Pageable pageable) {
         return federationQueryService.findByCriteria(criteria, pageable);
+    }
+
+    @Override
+    public GetConnectionFedimintHttpResponse getFederationConnection(Long id) throws FederationExecption {
+        Optional<FederationDTO> federationDTO = federationService.findOne(id);
+        if (federationDTO.isPresent()) {
+            return fedimintHttpService.getFederationConnection(federationDTO.get().getFedimintId());
+        }
+        throw new FederationExecption("Federation does not Exist");
     }
 }
