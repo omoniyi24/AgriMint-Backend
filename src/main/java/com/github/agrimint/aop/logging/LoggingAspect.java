@@ -45,6 +45,9 @@ public class LoggingAspect {
     @Pointcut(
         "within(com.github.agrimint.repository..*)" +
         " || within(com.github.agrimint.service..*)" +
+        " || within(com.github.agrimint.extended.service..*)" +
+        " || within(com.github.agrimint.extended.repository..*)" +
+        " || within(com.github.agrimint.extended.resources..*)" +
         " || within(com.github.agrimint.web.rest..*)"
     )
     public void applicationPackagePointcut() {

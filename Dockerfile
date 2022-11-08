@@ -1,10 +1,6 @@
-FROM openjdk:8-jdk-alpine
-
-RUN mkdir -p /app
-#Set the current working directory inside the image
-WORKDIR /app
-
-RUN /bin/sh -c "./mvnw clean install"
-ENTRYPOINT ["java","-jar","./target/agri-mint-0.0.1-SNAPSHOT.jar"]
-EXPOSE 8080
+FROM openjdk:11
+ARG JAR_FILE=./target/agri-mint-0.0.1-SNAPSHOT.jar
+COPY ${JAR_FILE} agri-mint-0.0.1-SNAPSHOT.jar
+EXPOSE 8081
+ENTRYPOINT ["java","-jar","/agri-mint-0.0.1-SNAPSHOT.jar"]
 

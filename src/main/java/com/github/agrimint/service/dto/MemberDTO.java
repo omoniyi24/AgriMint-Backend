@@ -22,6 +22,9 @@ public class MemberDTO implements Serializable {
     private String fedimintId;
 
     @NotNull
+    private Long userId;
+
+    @NotNull
     private String phoneNumber;
 
     @NotNull
@@ -66,6 +69,14 @@ public class MemberDTO implements Serializable {
 
     public void setFedimintId(String fedimintId) {
         this.fedimintId = fedimintId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getPhoneNumber() {
@@ -137,6 +148,7 @@ public class MemberDTO implements Serializable {
             ", name='" + getName() + "'" +
             ", federationId=" + getFederationId() +
             ", fedimintId='" + getFedimintId() + "'" +
+            ", userId=" + getUserId() +
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", countryCode='" + getCountryCode() + "'" +
             ", active='" + getActive() + "'" +

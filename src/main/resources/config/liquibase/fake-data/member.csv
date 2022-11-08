@@ -1,11 +1,11 @@
-id;name;federation_id;fedimint_id;phone_number;country_code;active;guardian;date_created
-1;dot-com Ergonomic client-server;82484;Shoes California holistic;Open-source reboot;BQ;true;false;2022-11-04T17:43:24
-2;purple;50495;Beauty Awesome Islands;Optimization Computer;MA;false;false;2022-11-04T07:12:15
-3;user-facing Wooden Practical;70625;user-facing transmitting withdrawal;Granite Angola Tuna;CF;true;true;2022-11-04T07:27:53
-4;collaborative Forint;16729;Keyboard Integration;User-centric;NF;false;true;2022-11-04T04:50:08
-5;e-business withdrawal;72133;reboot green;Cross-group Wyoming Directives;SL;false;true;2022-11-04T00:09:00
-6;Sterling;60632;support logistical real-time;Beauty Alaska;LA;false;false;2022-11-04T09:46:42
-7;invoice Licensed;49274;Metal;capacitor Cotton fault-tolerant;TF;false;false;2022-11-04T12:38:04
-8;Small;72552;Fundamental JBOD Cotton;Public-key bypassing;BZ;true;true;2022-11-04T06:56:19
-9;system;52388;Bedfordshire Denar;Supervisor Internal;GN;true;true;2022-11-03T23:18:56
-10;New Architect;41663;Grocery;ROI;NZ;true;false;2022-11-04T06:15:07
+id;name;federation_id;fedimint_id;user_id;phone_number;country_code;active;guardian;date_created
+1;dot-com Ergonomic client-server;82484;Shoes California holistic;53748;Jamahiriya;TN;false;false;2022-11-04T08:43:01
+2;Wooden Frozen;77704;Avon;57873;Islands services;CO;false;false;2022-11-04T20:03:15
+3;Ergonomic Creative;12467;Practical feed;94015;transmitting withdrawal;TN;false;false;2022-11-04T20:13:30
+4;Automotive payment;88466;North Brand bleeding-edge;43861;Bike;CX;true;false;2022-11-04T15:02:35
+5;Metal Developer e-business;65154;monitor;75252;Czech experiences Steel;YT;false;true;2022-11-04T16:42:26
+6;up CSS logistical;96464;Internal;57990;real-time value-added New;GH;true;false;2022-11-04T09:35:18
+7;Carolina Fresh;11178;Music 1080p;94389;Cotton fault-tolerant;TF;false;false;2022-11-04T12:38:04
+8;Small;72552;Fundamental JBOD Cotton;58591;Dollar;BI;true;false;2022-11-04T00:43:55
+9;Account deliverables convergence;99880;Berkshire Supervisor Internal;34321;Turkey New;YE;false;false;2022-11-04T11:12:41
+10;Grocery;8266;Up-sized Massachusetts;4280;Customer Krona;BF;true;false;2022-11-04T14:07:00

@@ -95,6 +95,9 @@ public class MemberQueryService extends QueryService<Member> {
             if (criteria.getFedimintId() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getFedimintId(), Member_.fedimintId));
             }
+            if (criteria.getUserId() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getUserId(), Member_.userId));
+            }
             if (criteria.getPhoneNumber() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getPhoneNumber(), Member_.phoneNumber));
             }

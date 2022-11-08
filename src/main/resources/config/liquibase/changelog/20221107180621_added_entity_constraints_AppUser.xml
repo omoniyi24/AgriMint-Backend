@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <!--
+        Added the constraints for entity AppUser.
+    -->
+    <changeSet id="20221107180621-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="app_user_id"
+                                 baseTableName="rel_app_user__authorities"
+                                 constraintName="fk_rel_app_user__authorities__app_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="app_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="authorities_id"
+                                 baseTableName="rel_app_user__authorities"
+                                 constraintName="fk_rel_app_user__authorities__authorities_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="app_role"/>
+        
+    </changeSet>
+</databaseChangeLog>

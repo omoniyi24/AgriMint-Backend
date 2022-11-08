@@ -17,6 +17,11 @@
       "fieldValidateRules": ["required"]
     },
     {
+      "fieldName": "userId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
       "fieldName": "phoneNumber",
       "fieldType": "String",
       "fieldValidateRules": ["required"]

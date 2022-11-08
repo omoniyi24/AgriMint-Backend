@@ -3,11 +3,11 @@ package com.github.agrimint.extended.service.impl;
 import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_WITH_ID_DOES_NOT_EXIST;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
-import com.github.agrimint.extended.dto.CreateFedimintHttpRequest;
 import com.github.agrimint.extended.dto.CreateGuardianFedimintHttpRequest;
-import com.github.agrimint.extended.dto.CreateGuardianFedimintHttpResponse;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exeception.UserException;
+import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.github.agrimint.extended.util.FedimintUtil;
@@ -15,6 +15,7 @@ import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.GuardianService;
 import com.github.agrimint.service.MemberService;
+import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.GuardianDTO;
 import com.github.agrimint.service.dto.MemberDTO;
@@ -34,7 +35,7 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
     private final FederationService federationService;
     private final QueryUtil queryUtil;
     private final FedimintUtil fedimintUtil;
-    private final FedimintHttpService fedimintHttpService;
+    private final ExtendedAppUserService extendedAppUserService;
 
     public ExtendedGuadianServiceImpl(
         MemberService memberService,
@@ -42,43 +43,53 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         FederationService federationService,
         QueryUtil queryUtil,
         FedimintUtil fedimintUtil,
-        FedimintHttpService fedimintHttpService
+        ExtendedAppUserService extendedAppUserService
     ) {
         this.memberService = memberService;
         this.guardianService = guardianService;
         this.federationService = federationService;
         this.queryUtil = queryUtil;
         this.fedimintUtil = fedimintUtil;
-        this.fedimintHttpService = fedimintHttpService;
+        this.extendedAppUserService = extendedAppUserService;
     }
 
     @Override
-    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO) throws MemberAlreadyExistExecption, FederationExecption {
-        Optional<FederationDTO> guradianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
-        if (guradianFed.isEmpty()) {
-            throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatGuardianRequestDTO.getFederationId()));
-        }
-        CreateGuardianFedimintHttpRequest createFedimintHttpRequest = fedimintUtil.convertToFedimintRequest(
-            creatGuardianRequestDTO,
-            guradianFed.get()
+    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO)
+        throws MemberAlreadyExistExecption, FederationExecption, UserException {
+        Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByPhoneNumberAndCountryCode(
+            creatGuardianRequestDTO.getCountryCode(),
+            creatGuardianRequestDTO.getPhoneNumber()
         );
-        CreateGuardianFedimintHttpResponse guardian = fedimintHttpService.createGuardian(createFedimintHttpRequest);
-        MemberDTO memberDTO = new MemberDTO();
-        BeanUtils.copyProperties(creatGuardianRequestDTO, memberDTO);
-        memberDTO.setActive(true);
-        memberDTO.setGuardian(true);
-        memberDTO.setDateCreated(Instant.now());
-        memberDTO = memberService.save(memberDTO);
-        if (memberDTO.getGuardian()) {
-            GuardianDTO guardianDTO = new GuardianDTO();
-            guardianDTO.setMemberId(memberDTO.getId());
-            guardianDTO.setInvitationAccepted(false);
-            guardianDTO.setInvitationSent(false);
-            guardianDTO.setSecret(creatGuardianRequestDTO.getSecret());
-            guardianDTO.setNodeNumber(creatGuardianRequestDTO.getNodeNumber());
-            guardianService.save(guardianDTO);
+        if (userByPhoneNumberAndCountryCode.isPresent()) {
+            Optional<FederationDTO> guradianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
+            if (guradianFed.isEmpty()) {
+                throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatGuardianRequestDTO.getFederationId()));
+            }
+            CreateGuardianFedimintHttpRequest createFedimintHttpRequest = fedimintUtil.convertToFedimintRequest(
+                creatGuardianRequestDTO,
+                guradianFed.get()
+            );
+            MemberDTO memberDTO = new MemberDTO();
+            BeanUtils.copyProperties(creatGuardianRequestDTO, memberDTO);
+            memberDTO.setActive(true);
+            memberDTO.setGuardian(true);
+            memberDTO.setFedimintId(createFedimintHttpRequest.getFederationId());
+            memberDTO.setDateCreated(Instant.now());
+            memberDTO.setUserId(userByPhoneNumberAndCountryCode.get().getId());
+            memberDTO = memberService.save(memberDTO);
+            if (memberDTO.getGuardian()) {
+                GuardianDTO guardianDTO = new GuardianDTO();
+                guardianDTO.setMemberId(memberDTO.getId());
+                guardianDTO.setInvitationAccepted(false);
+                guardianDTO.setInvitationSent(false);
+                guardianDTO.setSecret(creatGuardianRequestDTO.getSecret());
+                guardianDTO.setNodeNumber(creatGuardianRequestDTO.getNodeNumber());
+                guardianService.save(guardianDTO);
+            }
+            queryUtil.persistFederationMember(creatGuardianRequestDTO.getFederationId(), memberDTO.getId());
+            return memberDTO;
+        } else {
+            throw new UserException("User not found");
         }
-        queryUtil.persistFederationMember(creatGuardianRequestDTO.getFederationId(), memberDTO.getId());
-        return memberDTO;
     }
 }

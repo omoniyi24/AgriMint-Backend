@@ -2,28 +2,25 @@
 version: '3.8'
 services:
   agrimint-app:
-    image: agrimint
+    image: omoniyi24/agrimint-backend:latest
+    volumes:
+      - ~/AgriMint/data/:/var/lib/data/
+    #    depends_on:
+    #      - jhipster-registry
+    #    deploy:
+    #      restart_policy:
+    #        condition: on-failure
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
-      - SPRING_PROFILES_ACTIVE=prod,api-docs
+      - SPRING_PROFILES_ACTIVE=dev,api-docs
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
       - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://agrimint-postgresql:5432/AgriMint
-      - SPRING_LIQUIBASE_URL=jdbc:postgresql://agrimint-postgresql:5432/AgriMint
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/var/lib/data/h2db/db/agrimint
+      - SPRING_LIQUIBASE_URL=jdbc:h2:file:/var/lib/data/h2db/db/agrimint
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
-  agrimint-postgresql:
-    image: postgres:13.2
-    # volumes:
-    #   - ~/volumes/jhipster/AgriMint/postgresql/:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=AgriMint
-      - POSTGRES_PASSWORD=
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    # If you want to expose these ports outside your dev PC,
-    # remove the "127.0.0.1:" prefix
     ports:
-      - 127.0.0.1:5432:5432
+      - 127.0.0.1:8081:8081
   jhipster-registry:
     image: jhipster/jhipster-registry:v6.7.1
     volumes:

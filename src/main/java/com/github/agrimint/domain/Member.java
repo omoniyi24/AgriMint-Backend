@@ -32,6 +32,10 @@ public class Member implements Serializable {
     private String fedimintId;
 
     @NotNull
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @NotNull
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
@@ -102,6 +106,19 @@ public class Member implements Serializable {
 
     public void setFedimintId(String fedimintId) {
         this.fedimintId = fedimintId;
+    }
+
+    public Long getUserId() {
+        return this.userId;
+    }
+
+    public Member userId(Long userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getPhoneNumber() {
@@ -196,6 +213,7 @@ public class Member implements Serializable {
             ", name='" + getName() + "'" +
             ", federationId=" + getFederationId() +
             ", fedimintId='" + getFedimintId() + "'" +
+            ", userId=" + getUserId() +
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", countryCode='" + getCountryCode() + "'" +
             ", active='" + getActive() + "'" +
