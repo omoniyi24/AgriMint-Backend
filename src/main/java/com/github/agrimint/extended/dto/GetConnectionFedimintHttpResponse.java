@@ -1,5 +1,7 @@
 package com.github.agrimint.extended.dto;
 
+import com.google.gson.Gson;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -10,5 +12,5 @@ import lombok.Data;
 @Data
 public class GetConnectionFedimintHttpResponse {
 
-    private List<List<String>> members;
+    private ArrayList<ArrayList<String>> members;
 }

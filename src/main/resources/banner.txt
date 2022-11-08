@@ -1,10 +1,19 @@
 
-  ${AnsiColor.GREEN}      ██╗${AnsiColor.RED} ██╗   ██╗ ████████╗ ███████╗   ██████╗ ████████╗ ████████╗ ███████╗
-  ${AnsiColor.GREEN}      ██║${AnsiColor.RED} ██║   ██║ ╚══██╔══╝ ██╔═══██╗ ██╔════╝ ╚══██╔══╝ ██╔═════╝ ██╔═══██╗
-  ${AnsiColor.GREEN}      ██║${AnsiColor.RED} ████████║    ██║    ███████╔╝ ╚█████╗     ██║    ██████╗   ███████╔╝
-  ${AnsiColor.GREEN}██╗   ██║${AnsiColor.RED} ██╔═══██║    ██║    ██╔════╝   ╚═══██╗    ██║    ██╔═══╝   ██╔══██║
-  ${AnsiColor.GREEN}╚██████╔╝${AnsiColor.RED} ██║   ██║ ████████╗ ██║       ██████╔╝    ██║    ████████╗ ██║  ╚██╗
-  ${AnsiColor.GREEN} ╚═════╝ ${AnsiColor.RED} ╚═╝   ╚═╝ ╚═══════╝ ╚═╝       ╚═════╝     ╚═╝    ╚═══════╝ ╚═╝   ╚═╝
 
-${AnsiColor.BRIGHT_BLUE}:: JHipster 🤓  :: Running Spring Boot ${spring-boot.version} ::
-:: https://www.jhipster.tech ::${AnsiColor.DEFAULT}
+                                                          ____
+${AnsiColor.GREEN}   ,---,        ${AnsiColor.RED}                                        ,'  , `.                            ___
+${AnsiColor.GREEN}  '  .' \       ${AnsiColor.RED}                        ,--,         ,-+-,.' _ |   ,--,                   ,--.'|_
+${AnsiColor.GREEN} /  ;    '.     ${AnsiColor.RED}              __  ,-. ,--.'|      ,-+-. ;   , || ,--.'|          ,---,    |  | :,'
+${AnsiColor.GREEN}:  :       \    ${AnsiColor.RED}  ,----._,. ,' ,'/ /| |  |,      ,--.'|'   |  ;| |  |,       ,-+-. /  |   :  : ' :
+${AnsiColor.GREEN}:  |   /\   \   ${AnsiColor.RED} /   /  ' / '  | |' | `--'_     |   |  ,', |  ': `--'_      ,--.'|'   | .;__,'  /
+${AnsiColor.GREEN}|  :  ' ;.   :  ${AnsiColor.RED}|   :     | |  |   ,' ,' ,'|    |   | /  | |  || ,' ,'|    |   |  ,"' | |  |   |
+${AnsiColor.GREEN}|  |  ;/  \   \ ${AnsiColor.RED}|   | .\  . '  :  /   '  | |    '   | :  | :  |, '  | |    |   | /  | | :__,'| :
+${AnsiColor.GREEN}'  :  | \  \ ,' ${AnsiColor.RED}.   ; ';  | |  | '    |  | :    ;   . |  ; |--'  |  | :    |   | |  | |   '  : |__
+${AnsiColor.GREEN}|  |  '  '--'   ${AnsiColor.RED}'   .   . | ;  : |    '  : |__  |   : |  | ,     '  : |__  |   | |  |/    |  | '.'|
+${AnsiColor.GREEN}|  :  :         ${AnsiColor.RED} `---`-'| | |  , ;    |  | '.'| |   : '  |/      |  | '.'| |   | |--'     ;  :    ;
+${AnsiColor.GREEN}|  | ,'         ${AnsiColor.RED} .'__/\_: |  ---'     ;  :    ; ;   | |`-'       ;  :    ; |   |/         |  ,   /
+${AnsiColor.GREEN}`--''           ${AnsiColor.RED} |   :    :           |  ,   /  |   ;/           |  ,   /  '---'           ---`-'
+${AnsiColor.GREEN}                ${AnsiColor.RED}  \   \  /             ---`-'   '---'             ---`-'
+${AnsiColor.GREEN}                ${AnsiColor.RED}   `--`-'
+${AnsiColor.BRIGHT_BLUE}:: AgricMint 🤓  :: Running Spring Boot ${spring-boot.version} ::
+Powered by Spring Boot ${spring-boot.version} ${AnsiColor.DEFAULT}

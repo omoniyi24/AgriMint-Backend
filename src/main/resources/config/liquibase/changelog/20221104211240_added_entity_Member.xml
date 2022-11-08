@@ -23,6 +23,9 @@
             <column name="fedimint_id" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
             <column name="phone_number" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
@@ -62,6 +65,7 @@
             <column name="name" type="string"/>
             <column name="federation_id" type="numeric"/>
             <column name="fedimint_id" type="string"/>
+            <column name="user_id" type="numeric"/>
             <column name="phone_number" type="string"/>
             <column name="country_code" type="string"/>
             <column name="active" type="boolean"/>

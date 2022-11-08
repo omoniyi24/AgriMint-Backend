@@ -10,7 +10,7 @@
 
 # ===================================================================
 # Standard Spring Boot properties.
-# Full reference is available at:
+# Full reference is avapostgrilable at:
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
@@ -145,7 +145,7 @@ spring:
       hibernate.query.fail_on_pagination_over_collection_fetch: true
       hibernate.query.in_clause_parameter_padding: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
@@ -222,3 +222,10 @@ jhipster:
 # ===================================================================
 
 # application:
+fedimint:
+  baseUrl: 'http://46.101.210.143:3000/api'
+  createFederationUrl: ${fedimint.baseUrl}/federations
+  connectionUrl: ${fedimint.baseUrl}/federations/%s/connection-info
+  createGuardianUrl: ${fedimint.baseUrl}/federations/guardians
+  joinFederationUrl: ${fedimint.baseUrl}/guardians/%s/federations/joined
+  excahngeKeyUrl: ${fedimint.baseUrl}/guardians/%s/keys/exchange

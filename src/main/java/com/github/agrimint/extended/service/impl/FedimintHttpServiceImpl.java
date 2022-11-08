@@ -4,10 +4,6 @@ import com.github.agrimint.extended.dto.*;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -32,6 +28,12 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
 
     @Value("${fedimint.createGuardianUrl}")
     private String createGuardianUrl;
+
+    @Value("${fedimint.joinFederationUrl}")
+    private String joinFederationUrl;
+
+    @Value("${fedimint.excahngeKeyUrl}")
+    private String excahngeKeyUrl;
 
     public FedimintHttpServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -73,8 +75,7 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
             if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
                 String responsePayload = responseEntity.getBody();
                 log.info("getFederationConnection response body {} ", responsePayload);
-                Type targetClassType = new TypeToken<ArrayList<ArrayList<String>>>() {}.getType();
-                return gson.fromJson(responsePayload, targetClassType);
+                return gson.fromJson(responsePayload, GetConnectionFedimintHttpResponse.class);
             }
             throw new FederationExecption("Failed to get Federation Connection");
         } catch (Exception e) {
@@ -101,6 +102,46 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new FederationExecption("Error getting Federation Connection");
+        }
+    }
+
+    @Override
+    public GetConnectionFedimintHttpResponse joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest) throws FederationExecption {
+        String payload = gson.toJson(joinFedimintHttpRequest);
+        log.info("joinFederation request payload {} on url: {} ", payload, this.joinFederationUrl);
+        try {
+            HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());
+            ResponseEntity<String> postForEntity = restTemplate.postForEntity(this.joinFederationUrl, entity, String.class);
+            log.info("joinFederation RAW response payload {} ", postForEntity);
+            if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
+                String responsePayload = postForEntity.getBody();
+                log.info("joinFederation response body {} ", responsePayload);
+                return gson.fromJson(responsePayload, GetConnectionFedimintHttpResponse.class);
+            }
+            throw new FederationExecption("Failed to Join Federation");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FederationExecption("Error Joining Federation");
+        }
+    }
+
+    @Override
+    public GetConnectionFedimintHttpResponse exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest) throws FederationExecption {
+        String payload = gson.toJson(joinFedimintHttpRequest);
+        log.info("exchangeKeys request payload {} on url: {} ", payload, this.excahngeKeyUrl);
+        try {
+            HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());
+            ResponseEntity<String> postForEntity = restTemplate.postForEntity(this.excahngeKeyUrl, entity, String.class);
+            log.info("exchangeKeys RAW response payload {} ", postForEntity);
+            if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
+                String responsePayload = postForEntity.getBody();
+                log.info("exchangeKeys response body {} ", responsePayload);
+                return gson.fromJson(responsePayload, GetConnectionFedimintHttpResponse.class);
+            }
+            throw new FederationExecption("Failed to exchange Federation");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FederationExecption("Error Exchanging Federation");
         }
     }
 

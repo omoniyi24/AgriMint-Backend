@@ -1,7 +1,18 @@
+entity AppUser(app_user) {
+    login String required
+    name String required
+    phoneNumber String required
+    countryCode String required
+    secret String required
+    active Boolean required
+    dateCreated Instant required
+}
+
 entity Member {
     name String required
     federationId Long required
     fedimintId String required
+    userId Long required
     phoneNumber String required
     countryCode String required
     active Boolean required
@@ -32,6 +43,25 @@ entity FederationMember {
     memberId Long required
     active Boolean required
     dateCreated Instant required
+}
+
+entity Role(app_role){
+  name String required,
+  description String required,
+  userDefined Boolean required,
+  defaultRole Boolean required,
+  roleGroup String,
+}
+
+entity Privilege(app_privilege) {
+  name String required,
+  description String required,
+  group String
+}
+
+relationship ManyToMany{
+    AppUser {authorities(name)} to Role {users},
+    Role {authorities(name)} to Privilege {roles}
 }
 
 

@@ -44,6 +44,10 @@ class MemberResourceIT {
     private static final String DEFAULT_FEDIMINT_ID = "AAAAAAAAAA";
     private static final String UPDATED_FEDIMINT_ID = "BBBBBBBBBB";
 
+    private static final Long DEFAULT_USER_ID = 1L;
+    private static final Long UPDATED_USER_ID = 2L;
+    private static final Long SMALLER_USER_ID = 1L - 1L;
+
     private static final String DEFAULT_PHONE_NUMBER = "AAAAAAAAAA";
     private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
 
@@ -90,6 +94,7 @@ class MemberResourceIT {
             .name(DEFAULT_NAME)
             .federationId(DEFAULT_FEDERATION_ID)
             .fedimintId(DEFAULT_FEDIMINT_ID)
+            .userId(DEFAULT_USER_ID)
             .phoneNumber(DEFAULT_PHONE_NUMBER)
             .countryCode(DEFAULT_COUNTRY_CODE)
             .active(DEFAULT_ACTIVE)
@@ -109,6 +114,7 @@ class MemberResourceIT {
             .name(UPDATED_NAME)
             .federationId(UPDATED_FEDERATION_ID)
             .fedimintId(UPDATED_FEDIMINT_ID)
+            .userId(UPDATED_USER_ID)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .countryCode(UPDATED_COUNTRY_CODE)
             .active(UPDATED_ACTIVE)
@@ -139,6 +145,7 @@ class MemberResourceIT {
         assertThat(testMember.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testMember.getFederationId()).isEqualTo(DEFAULT_FEDERATION_ID);
         assertThat(testMember.getFedimintId()).isEqualTo(DEFAULT_FEDIMINT_ID);
+        assertThat(testMember.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(DEFAULT_ACTIVE);
@@ -207,6 +214,24 @@ class MemberResourceIT {
         int databaseSizeBeforeTest = memberRepository.findAll().size();
         // set the field null
         member.setFedimintId(null);
+
+        // Create the Member, which fails.
+        MemberDTO memberDTO = memberMapper.toDto(member);
+
+        restMemberMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(memberDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Member> memberList = memberRepository.findAll();
+        assertThat(memberList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkUserIdIsRequired() throws Exception {
+        int databaseSizeBeforeTest = memberRepository.findAll().size();
+        // set the field null
+        member.setUserId(null);
 
         // Create the Member, which fails.
         MemberDTO memberDTO = memberMapper.toDto(member);
@@ -324,6 +349,7 @@ class MemberResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].federationId").value(hasItem(DEFAULT_FEDERATION_ID.intValue())))
             .andExpect(jsonPath("$.[*].fedimintId").value(hasItem(DEFAULT_FEDIMINT_ID)))
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
@@ -346,6 +372,7 @@ class MemberResourceIT {
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.federationId").value(DEFAULT_FEDERATION_ID.intValue()))
             .andExpect(jsonPath("$.fedimintId").value(DEFAULT_FEDIMINT_ID))
+            .andExpect(jsonPath("$.userId").value(DEFAULT_USER_ID.intValue()))
             .andExpect(jsonPath("$.phoneNumber").value(DEFAULT_PHONE_NUMBER))
             .andExpect(jsonPath("$.countryCode").value(DEFAULT_COUNTRY_CODE))
             .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE.booleanValue()))
@@ -629,6 +656,110 @@ class MemberResourceIT {
 
         // Get all the memberList where fedimintId does not contain UPDATED_FEDIMINT_ID
         defaultMemberShouldBeFound("fedimintId.doesNotContain=" + UPDATED_FEDIMINT_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId equals to DEFAULT_USER_ID
+        defaultMemberShouldBeFound("userId.equals=" + DEFAULT_USER_ID);
+
+        // Get all the memberList where userId equals to UPDATED_USER_ID
+        defaultMemberShouldNotBeFound("userId.equals=" + UPDATED_USER_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId not equals to DEFAULT_USER_ID
+        defaultMemberShouldNotBeFound("userId.notEquals=" + DEFAULT_USER_ID);
+
+        // Get all the memberList where userId not equals to UPDATED_USER_ID
+        defaultMemberShouldBeFound("userId.notEquals=" + UPDATED_USER_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId in DEFAULT_USER_ID or UPDATED_USER_ID
+        defaultMemberShouldBeFound("userId.in=" + DEFAULT_USER_ID + "," + UPDATED_USER_ID);
+
+        // Get all the memberList where userId equals to UPDATED_USER_ID
+        defaultMemberShouldNotBeFound("userId.in=" + UPDATED_USER_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId is not null
+        defaultMemberShouldBeFound("userId.specified=true");
+
+        // Get all the memberList where userId is null
+        defaultMemberShouldNotBeFound("userId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId is greater than or equal to DEFAULT_USER_ID
+        defaultMemberShouldBeFound("userId.greaterThanOrEqual=" + DEFAULT_USER_ID);
+
+        // Get all the memberList where userId is greater than or equal to UPDATED_USER_ID
+        defaultMemberShouldNotBeFound("userId.greaterThanOrEqual=" + UPDATED_USER_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId is less than or equal to DEFAULT_USER_ID
+        defaultMemberShouldBeFound("userId.lessThanOrEqual=" + DEFAULT_USER_ID);
+
+        // Get all the memberList where userId is less than or equal to SMALLER_USER_ID
+        defaultMemberShouldNotBeFound("userId.lessThanOrEqual=" + SMALLER_USER_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsLessThanSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId is less than DEFAULT_USER_ID
+        defaultMemberShouldNotBeFound("userId.lessThan=" + DEFAULT_USER_ID);
+
+        // Get all the memberList where userId is less than UPDATED_USER_ID
+        defaultMemberShouldBeFound("userId.lessThan=" + UPDATED_USER_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllMembersByUserIdIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        memberRepository.saveAndFlush(member);
+
+        // Get all the memberList where userId is greater than DEFAULT_USER_ID
+        defaultMemberShouldNotBeFound("userId.greaterThan=" + DEFAULT_USER_ID);
+
+        // Get all the memberList where userId is greater than SMALLER_USER_ID
+        defaultMemberShouldBeFound("userId.greaterThan=" + SMALLER_USER_ID);
     }
 
     @Test
@@ -955,6 +1086,7 @@ class MemberResourceIT {
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].federationId").value(hasItem(DEFAULT_FEDERATION_ID.intValue())))
             .andExpect(jsonPath("$.[*].fedimintId").value(hasItem(DEFAULT_FEDIMINT_ID)))
+            .andExpect(jsonPath("$.[*].userId").value(hasItem(DEFAULT_USER_ID.intValue())))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
             .andExpect(jsonPath("$.[*].countryCode").value(hasItem(DEFAULT_COUNTRY_CODE)))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
@@ -1011,6 +1143,7 @@ class MemberResourceIT {
             .name(UPDATED_NAME)
             .federationId(UPDATED_FEDERATION_ID)
             .fedimintId(UPDATED_FEDIMINT_ID)
+            .userId(UPDATED_USER_ID)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .countryCode(UPDATED_COUNTRY_CODE)
             .active(UPDATED_ACTIVE)
@@ -1033,6 +1166,7 @@ class MemberResourceIT {
         assertThat(testMember.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testMember.getFederationId()).isEqualTo(UPDATED_FEDERATION_ID);
         assertThat(testMember.getFedimintId()).isEqualTo(UPDATED_FEDIMINT_ID);
+        assertThat(testMember.getUserId()).isEqualTo(UPDATED_USER_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(UPDATED_ACTIVE);
@@ -1117,7 +1251,7 @@ class MemberResourceIT {
         Member partialUpdatedMember = new Member();
         partialUpdatedMember.setId(member.getId());
 
-        partialUpdatedMember.name(UPDATED_NAME).guardian(UPDATED_GUARDIAN);
+        partialUpdatedMember.name(UPDATED_NAME).active(UPDATED_ACTIVE);
 
         restMemberMockMvc
             .perform(
@@ -1134,10 +1268,11 @@ class MemberResourceIT {
         assertThat(testMember.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testMember.getFederationId()).isEqualTo(DEFAULT_FEDERATION_ID);
         assertThat(testMember.getFedimintId()).isEqualTo(DEFAULT_FEDIMINT_ID);
+        assertThat(testMember.getUserId()).isEqualTo(DEFAULT_USER_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(DEFAULT_COUNTRY_CODE);
-        assertThat(testMember.getActive()).isEqualTo(DEFAULT_ACTIVE);
-        assertThat(testMember.getGuardian()).isEqualTo(UPDATED_GUARDIAN);
+        assertThat(testMember.getActive()).isEqualTo(UPDATED_ACTIVE);
+        assertThat(testMember.getGuardian()).isEqualTo(DEFAULT_GUARDIAN);
         assertThat(testMember.getDateCreated()).isEqualTo(DEFAULT_DATE_CREATED);
     }
 
@@ -1157,6 +1292,7 @@ class MemberResourceIT {
             .name(UPDATED_NAME)
             .federationId(UPDATED_FEDERATION_ID)
             .fedimintId(UPDATED_FEDIMINT_ID)
+            .userId(UPDATED_USER_ID)
             .phoneNumber(UPDATED_PHONE_NUMBER)
             .countryCode(UPDATED_COUNTRY_CODE)
             .active(UPDATED_ACTIVE)
@@ -1178,6 +1314,7 @@ class MemberResourceIT {
         assertThat(testMember.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testMember.getFederationId()).isEqualTo(UPDATED_FEDERATION_ID);
         assertThat(testMember.getFedimintId()).isEqualTo(UPDATED_FEDIMINT_ID);
+        assertThat(testMember.getUserId()).isEqualTo(UPDATED_USER_ID);
         assertThat(testMember.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
         assertThat(testMember.getCountryCode()).isEqualTo(UPDATED_COUNTRY_CODE);
         assertThat(testMember.getActive()).isEqualTo(UPDATED_ACTIVE);

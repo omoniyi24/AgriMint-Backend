@@ -33,6 +33,8 @@ public class MemberCriteria implements Serializable, Criteria {
 
     private StringFilter fedimintId;
 
+    private LongFilter userId;
+
     private StringFilter phoneNumber;
 
     private StringFilter countryCode;
@@ -50,6 +52,7 @@ public class MemberCriteria implements Serializable, Criteria {
         this.name = other.name == null ? null : other.name.copy();
         this.federationId = other.federationId == null ? null : other.federationId.copy();
         this.fedimintId = other.fedimintId == null ? null : other.fedimintId.copy();
+        this.userId = other.userId == null ? null : other.userId.copy();
         this.phoneNumber = other.phoneNumber == null ? null : other.phoneNumber.copy();
         this.countryCode = other.countryCode == null ? null : other.countryCode.copy();
         this.active = other.active == null ? null : other.active.copy();
@@ -120,6 +123,21 @@ public class MemberCriteria implements Serializable, Criteria {
 
     public void setFedimintId(StringFilter fedimintId) {
         this.fedimintId = fedimintId;
+    }
+
+    public LongFilter getUserId() {
+        return userId;
+    }
+
+    public LongFilter userId() {
+        if (userId == null) {
+            userId = new LongFilter();
+        }
+        return userId;
+    }
+
+    public void setUserId(LongFilter userId) {
+        this.userId = userId;
     }
 
     public StringFilter getPhoneNumber() {
@@ -211,6 +229,7 @@ public class MemberCriteria implements Serializable, Criteria {
             Objects.equals(name, that.name) &&
             Objects.equals(federationId, that.federationId) &&
             Objects.equals(fedimintId, that.fedimintId) &&
+            Objects.equals(userId, that.userId) &&
             Objects.equals(phoneNumber, that.phoneNumber) &&
             Objects.equals(countryCode, that.countryCode) &&
             Objects.equals(active, that.active) &&
@@ -221,7 +240,7 @@ public class MemberCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, federationId, fedimintId, phoneNumber, countryCode, active, guardian, dateCreated);
+        return Objects.hash(id, name, federationId, fedimintId, userId, phoneNumber, countryCode, active, guardian, dateCreated);
     }
 
     // prettier-ignore
@@ -232,6 +251,7 @@ public class MemberCriteria implements Serializable, Criteria {
             (name != null ? "name=" + name + ", " : "") +
             (federationId != null ? "federationId=" + federationId + ", " : "") +
             (fedimintId != null ? "fedimintId=" + fedimintId + ", " : "") +
+            (userId != null ? "userId=" + userId + ", " : "") +
             (phoneNumber != null ? "phoneNumber=" + phoneNumber + ", " : "") +
             (countryCode != null ? "countryCode=" + countryCode + ", " : "") +
             (active != null ? "active=" + active + ", " : "") +

@@ -3,6 +3,7 @@ package com.github.agrimint.extended.resources;
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
 import com.github.agrimint.extended.exeception.FederationExecption;
 import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exeception.UserException;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
 import com.github.agrimint.service.dto.MemberDTO;
 import com.github.agrimint.web.rest.GuardianResource;
@@ -53,7 +54,7 @@ public class ExtendedGuardianResource {
 
         try {
             result = guardianService.create(guardianDTO);
-        } catch (MemberAlreadyExistExecption | FederationExecption ex) {
+        } catch (MemberAlreadyExistExecption | FederationExecption | UserException ex) {
             Map<String, String> errorMessageMap = new HashMap<>();
             errorMessageMap.put("errorMessage", ex.getMessage());
             return ResponseEntity.badRequest().body(errorMessageMap);
