@@ -21,7 +21,7 @@
                 <constraints nullable="false" />
             </column>
             <column name="fedimint_id" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="false" />

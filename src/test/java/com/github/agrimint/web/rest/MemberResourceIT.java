@@ -210,24 +210,6 @@ class MemberResourceIT {
 
     @Test
     @Transactional
-    void checkFedimintIdIsRequired() throws Exception {
-        int databaseSizeBeforeTest = memberRepository.findAll().size();
-        // set the field null
-        member.setFedimintId(null);
-
-        // Create the Member, which fails.
-        MemberDTO memberDTO = memberMapper.toDto(member);
-
-        restMemberMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(memberDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Member> memberList = memberRepository.findAll();
-        assertThat(memberList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void checkUserIdIsRequired() throws Exception {
         int databaseSizeBeforeTest = memberRepository.findAll().size();
         // set the field null

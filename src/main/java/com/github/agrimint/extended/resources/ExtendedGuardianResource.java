@@ -1,21 +1,22 @@
 package com.github.agrimint.extended.resources;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
-import com.github.agrimint.extended.exeception.FederationExecption;
-import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
-import com.github.agrimint.extended.exeception.UserException;
+import com.github.agrimint.extended.exception.FederationExecption;
+import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
 import com.github.agrimint.service.dto.MemberDTO;
 import com.github.agrimint.web.rest.GuardianResource;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tech.jhipster.web.util.HeaderUtil;
 
 /**
@@ -25,14 +26,12 @@ import tech.jhipster.web.util.HeaderUtil;
 @RequestMapping("/api/v1")
 public class ExtendedGuardianResource {
 
-    private final Logger log = LoggerFactory.getLogger(GuardianResource.class);
-
     private static final String ENTITY_NAME = "agriMintGuardian";
+    private final Logger log = LoggerFactory.getLogger(GuardianResource.class);
+    private final ExtendedGuardianService guardianService;
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
-
-    private final ExtendedGuardianService guardianService;
 
     public ExtendedGuardianResource(ExtendedGuardianService guardianService) {
         this.guardianService = guardianService;
@@ -50,17 +49,8 @@ public class ExtendedGuardianResource {
         throws URISyntaxException, MemberAlreadyExistExecption, FederationExecption {
         log.debug("REST request to save Guardian : {}", guardianDTO);
 
-        MemberDTO result = null;
+        MemberDTO result = guardianService.create(guardianDTO);
 
-        try {
-            result = guardianService.create(guardianDTO);
-        } catch (MemberAlreadyExistExecption | FederationExecption | UserException ex) {
-            Map<String, String> errorMessageMap = new HashMap<>();
-            errorMessageMap.put("errorMessage", ex.getMessage());
-            return ResponseEntity.badRequest().body(errorMessageMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return ResponseEntity
             .created(new URI("/api/members/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

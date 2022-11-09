@@ -2,21 +2,14 @@ package com.github.agrimint.extended.resources;
 
 import com.github.agrimint.extended.dto.CreateFederationRequestDTO;
 import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
-import com.github.agrimint.extended.exeception.FederationExecption;
+import com.github.agrimint.extended.exception.FederationExecption;
 import com.github.agrimint.extended.service.ExtendedFederationService;
-import com.github.agrimint.repository.FederationRepository;
-import com.github.agrimint.service.FederationQueryService;
-import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.criteria.FederationCriteria;
 import com.github.agrimint.service.dto.FederationDTO;
-import com.github.agrimint.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
-import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link com.github.agrimint.domain.Federation}.

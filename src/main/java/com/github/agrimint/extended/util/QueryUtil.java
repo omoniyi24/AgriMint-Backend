@@ -1,6 +1,6 @@
 package com.github.agrimint.extended.util;
 
-import com.github.agrimint.extended.exeception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
 import com.github.agrimint.service.AppUserQueryService;
 import com.github.agrimint.service.FederationMemberQueryService;
 import com.github.agrimint.service.FederationMemberService;

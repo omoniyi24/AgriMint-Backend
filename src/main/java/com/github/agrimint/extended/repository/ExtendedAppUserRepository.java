@@ -9,9 +9,6 @@ import org.springframework.stereotype.Repository;
 /**
  * @author OMONIYI ILESANMI
  */
-//@Repository
 public interface ExtendedAppUserRepository extends AppUserRepository {
-    //    @EntityGraph(attributePaths = "authorities")
-    //    @Cacheable(cacheNames = USERS_BY_LOGIN_CACHE)
     Optional<AppUser> findOneWithAuthoritiesByLogin(String login);
 }

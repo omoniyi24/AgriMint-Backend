@@ -181,46 +181,10 @@ class FederationResourceIT {
 
     @Test
     @Transactional
-    void checkFedimintIdIsRequired() throws Exception {
-        int databaseSizeBeforeTest = federationRepository.findAll().size();
-        // set the field null
-        federation.setFedimintId(null);
-
-        // Create the Federation, which fails.
-        FederationDTO federationDTO = federationMapper.toDto(federation);
-
-        restFederationMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(federationDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Federation> federationList = federationRepository.findAll();
-        assertThat(federationList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void checkNumberOfNodeIsRequired() throws Exception {
         int databaseSizeBeforeTest = federationRepository.findAll().size();
         // set the field null
         federation.setNumberOfNode(null);
-
-        // Create the Federation, which fails.
-        FederationDTO federationDTO = federationMapper.toDto(federation);
-
-        restFederationMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(federationDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Federation> federationList = federationRepository.findAll();
-        assertThat(federationList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkBasePortIsRequired() throws Exception {
-        int databaseSizeBeforeTest = federationRepository.findAll().size();
-        // set the field null
-        federation.setBasePort(null);
 
         // Create the Federation, which fails.
         FederationDTO federationDTO = federationMapper.toDto(federation);

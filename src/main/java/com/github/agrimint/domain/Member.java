@@ -27,8 +27,7 @@ public class Member implements Serializable {
     @Column(name = "federation_id", nullable = false)
     private Long federationId;
 
-    @NotNull
-    @Column(name = "fedimint_id", nullable = false)
+    @Column(name = "fedimint_id")
     private String fedimintId;
 
     @NotNull

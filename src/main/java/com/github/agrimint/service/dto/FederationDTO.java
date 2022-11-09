@@ -15,13 +15,11 @@ public class FederationDTO implements Serializable {
     @NotNull
     private String name;
 
-    @NotNull
     private String fedimintId;
 
     @NotNull
     private Integer numberOfNode;
 
-    @NotNull
     private Long basePort;
 
     @NotNull

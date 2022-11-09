@@ -1,7 +1,7 @@
 package com.github.agrimint.extended.service;
 
 import com.github.agrimint.extended.dto.*;
-import com.github.agrimint.extended.exeception.FederationExecption;
+import com.github.agrimint.extended.exception.FederationExecption;
 
 /**
  * @author OMONIYI ILESANMI

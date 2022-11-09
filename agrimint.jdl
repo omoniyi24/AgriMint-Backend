@@ -11,7 +11,7 @@ entity AppUser(app_user) {
 entity Member {
     name String required
     federationId Long required
-    fedimintId String required
+    fedimintId String
     userId Long required
     phoneNumber String required
     countryCode String required
@@ -30,9 +30,9 @@ entity Guardian {
 
 entity Federation {
     name String required
-    fedimintId String required
+    fedimintId String
     numberOfNode Integer required
-    basePort Long required
+    basePort Long
     numberOfRegisteredNode Integer required
     active Boolean required
     dateCreated Instant required

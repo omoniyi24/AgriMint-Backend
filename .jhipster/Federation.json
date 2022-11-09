@@ -8,8 +8,7 @@
     },
     {
       "fieldName": "fedimintId",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldType": "String"
     },
     {
       "fieldName": "numberOfNode",
@@ -18,8 +17,7 @@
     },
     {
       "fieldName": "basePort",
-      "fieldType": "Long",
-      "fieldValidateRules": ["required"]
+      "fieldType": "Long"
     },
     {
       "fieldName": "numberOfRegisteredNode",

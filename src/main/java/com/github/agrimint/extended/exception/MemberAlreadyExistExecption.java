@@ -1,4 +1,4 @@
-package com.github.agrimint.extended.exeception;
+package com.github.agrimint.extended.exception;
 
 /**
  * @author OMONIYI ILESANMI

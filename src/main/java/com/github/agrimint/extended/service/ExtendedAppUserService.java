@@ -1,8 +1,7 @@
 package com.github.agrimint.extended.service;
 
-import com.github.agrimint.domain.AppUser;
 import com.github.agrimint.extended.dto.AdminAppUserDTO;
-import com.github.agrimint.extended.exeception.UserException;
+import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.service.dto.AppUserDTO;
 import java.util.Optional;
 

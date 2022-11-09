@@ -18,7 +18,6 @@ public class MemberDTO implements Serializable {
     @NotNull
     private Long federationId;
 
-    @NotNull
     private String fedimintId;
 
     @NotNull
