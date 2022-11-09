@@ -1,7 +1,7 @@
 package com.github.agrimint.extended.service.impl;
 
 import com.github.agrimint.extended.dto.*;
-import com.github.agrimint.extended.exeception.FederationExecption;
+import com.github.agrimint.extended.exception.FederationExecption;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -85,9 +85,9 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    public CreateGuardianFedimintHttpResponse createGuardian(CreateGuardianFedimintHttpRequest createFedimintHttpRequest)
+    public CreateGuardianFedimintHttpResponse createGuardian(CreateGuardianFedimintHttpRequest createGuardianFedimintHttpRequest)
         throws FederationExecption {
-        String payload = gson.toJson(createFedimintHttpRequest);
+        String payload = gson.toJson(createGuardianFedimintHttpRequest);
         log.info("createGuardian request payload {} on url: {} ", payload, this.createGuardianUrl);
         try {
             HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());

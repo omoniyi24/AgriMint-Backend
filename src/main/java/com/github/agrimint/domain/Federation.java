@@ -23,16 +23,14 @@ public class Federation implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "fedimint_id", nullable = false)
+    @Column(name = "fedimint_id")
     private String fedimintId;
 
     @NotNull
     @Column(name = "number_of_node", nullable = false)
     private Integer numberOfNode;
 
-    @NotNull
-    @Column(name = "base_port", nullable = false)
+    @Column(name = "base_port")
     private Long basePort;
 
     @NotNull

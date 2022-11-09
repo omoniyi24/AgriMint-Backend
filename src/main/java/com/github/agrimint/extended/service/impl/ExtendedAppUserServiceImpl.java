@@ -1,8 +1,7 @@
 package com.github.agrimint.extended.service.impl;
 
-import com.github.agrimint.domain.AppUser;
 import com.github.agrimint.extended.dto.AdminAppUserDTO;
-import com.github.agrimint.extended.exeception.UserException;
+import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.repository.AppUserRepository;
@@ -13,7 +12,6 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author OMONIYI ILESANMI

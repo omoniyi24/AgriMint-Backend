@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class FedimintUtil {
 
-    public CreateFedimintHttpRequest convertToFedimintRequest(CreateFederationRequestDTO createFederationRequestDTO) {
+    public CreateFedimintHttpRequest convertToFedimintRequest(FederationDTO federationDTO) {
         CreateFedimintHttpRequest createFedimintHttpRequest = new CreateFedimintHttpRequest();
-        createFedimintHttpRequest.setName(createFederationRequestDTO.getName());
-        createFedimintHttpRequest.setNodes(createFederationRequestDTO.getNumberOfNode());
+        createFedimintHttpRequest.setName(federationDTO.getName());
+        createFedimintHttpRequest.setNodes(federationDTO.getNumberOfNode());
         return createFedimintHttpRequest;
     }
 

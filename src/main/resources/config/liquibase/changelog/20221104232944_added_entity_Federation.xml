@@ -18,13 +18,13 @@
                 <constraints nullable="false" />
             </column>
             <column name="fedimint_id" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             <column name="number_of_node" type="integer">
                 <constraints nullable="false" />
             </column>
             <column name="base_port" type="bigint">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             <column name="number_of_registered_node" type="integer">
                 <constraints nullable="false" />

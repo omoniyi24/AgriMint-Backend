@@ -4,8 +4,8 @@ import com.github.agrimint.extended.dto.CreateFederationRequestDTO;
 import com.github.agrimint.extended.dto.CreateFedimintHttpRequest;
 import com.github.agrimint.extended.dto.CreateFedimintHttpResponse;
 import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
-import com.github.agrimint.extended.exeception.FederationExecption;
-import com.github.agrimint.extended.exeception.UserException;
+import com.github.agrimint.extended.exception.FederationExecption;
+import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedFederationService;
 import com.github.agrimint.extended.service.FedimintHttpService;
@@ -59,20 +59,17 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
         if (userByPhoneNumberAndCountryCode.isEmpty()) {
             throw new UserException("User not Found");
         }
-        createFederationRequestDTO.setName(createFederationRequestDTO.getName().toLowerCase());
+        createFederationRequestDTO.setName(createFederationRequestDTO.getName().toUpperCase());
         if (queryUtil.getFederationCount(createFederationRequestDTO.getName()) > 0) {
             throw new FederationExecption("Federation Already Exist");
         }
-        CreateFedimintHttpRequest createFedimintHttpRequest = fedimintUtil.convertToFedimintRequest(createFederationRequestDTO);
-        CreateFedimintHttpResponse federation = fedimintHttpService.createFedimint(createFedimintHttpRequest);
+
         FederationDTO federationDTO = new FederationDTO();
         federationDTO.setNumberOfNode(createFederationRequestDTO.getNumberOfNode());
         federationDTO.setNumberOfRegisteredNode(0);
         federationDTO.setName(createFederationRequestDTO.getName());
         federationDTO.setActive(false);
         federationDTO.setDateCreated(Instant.now());
-        federationDTO.setFedimintId(federation.get_id());
-        federationDTO.setBasePort(federation.getBasePort());
         return federationService.save(federationDTO);
     }
 

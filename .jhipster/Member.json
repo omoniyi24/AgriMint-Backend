@@ -13,8 +13,7 @@
     },
     {
       "fieldName": "fedimintId",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldType": "String"
     },
     {
       "fieldName": "userId",
