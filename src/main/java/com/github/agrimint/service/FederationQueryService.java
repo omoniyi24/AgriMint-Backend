@@ -102,6 +102,9 @@ public class FederationQueryService extends QueryService<Federation> {
                 specification =
                     specification.and(buildRangeSpecification(criteria.getNumberOfRegisteredNode(), Federation_.numberOfRegisteredNode));
             }
+            if (criteria.getCreatedBy() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getCreatedBy(), Federation_.createdBy));
+            }
             if (criteria.getActive() != null) {
                 specification = specification.and(buildSpecification(criteria.getActive(), Federation_.active));
             }

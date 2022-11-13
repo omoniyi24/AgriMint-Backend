@@ -34,6 +34,7 @@ entity Federation {
     numberOfNode Integer required
     basePort Long
     numberOfRegisteredNode Integer required
+    createdBy Long
     active Boolean required
     dateCreated Instant required
 }

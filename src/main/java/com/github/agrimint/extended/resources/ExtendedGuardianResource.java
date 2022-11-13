@@ -49,7 +49,7 @@ public class ExtendedGuardianResource {
         throws URISyntaxException, MemberAlreadyExistExecption, FederationExecption {
         log.debug("REST request to save Guardian : {}", guardianDTO);
 
-        MemberDTO result = guardianService.create(guardianDTO);
+        MemberDTO result = guardianService.create(guardianDTO, false, true);
 
         return ResponseEntity
             .created(new URI("/api/members/" + result.getId()))

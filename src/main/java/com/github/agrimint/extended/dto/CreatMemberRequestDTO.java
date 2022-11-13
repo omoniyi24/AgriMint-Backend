@@ -21,12 +21,6 @@ public class CreatMemberRequestDTO implements Serializable {
 
     private String alias;
 
-    @NotNull
-    private String phoneNumber;
-
-    @NotNull
-    private String countryCode;
-
     private Integer nodeNumber;
 
     private Integer secret;

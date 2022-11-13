@@ -52,6 +52,10 @@ class FederationResourceIT {
     private static final Integer UPDATED_NUMBER_OF_REGISTERED_NODE = 2;
     private static final Integer SMALLER_NUMBER_OF_REGISTERED_NODE = 1 - 1;
 
+    private static final Long DEFAULT_CREATED_BY = 1L;
+    private static final Long UPDATED_CREATED_BY = 2L;
+    private static final Long SMALLER_CREATED_BY = 1L - 1L;
+
     private static final Boolean DEFAULT_ACTIVE = false;
     private static final Boolean UPDATED_ACTIVE = true;
 
@@ -91,6 +95,7 @@ class FederationResourceIT {
             .numberOfNode(DEFAULT_NUMBER_OF_NODE)
             .basePort(DEFAULT_BASE_PORT)
             .numberOfRegisteredNode(DEFAULT_NUMBER_OF_REGISTERED_NODE)
+            .createdBy(DEFAULT_CREATED_BY)
             .active(DEFAULT_ACTIVE)
             .dateCreated(DEFAULT_DATE_CREATED);
         return federation;
@@ -109,6 +114,7 @@ class FederationResourceIT {
             .numberOfNode(UPDATED_NUMBER_OF_NODE)
             .basePort(UPDATED_BASE_PORT)
             .numberOfRegisteredNode(UPDATED_NUMBER_OF_REGISTERED_NODE)
+            .createdBy(UPDATED_CREATED_BY)
             .active(UPDATED_ACTIVE)
             .dateCreated(UPDATED_DATE_CREATED);
         return federation;
@@ -138,6 +144,7 @@ class FederationResourceIT {
         assertThat(testFederation.getNumberOfNode()).isEqualTo(DEFAULT_NUMBER_OF_NODE);
         assertThat(testFederation.getBasePort()).isEqualTo(DEFAULT_BASE_PORT);
         assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(DEFAULT_NUMBER_OF_REGISTERED_NODE);
+        assertThat(testFederation.getCreatedBy()).isEqualTo(DEFAULT_CREATED_BY);
         assertThat(testFederation.getActive()).isEqualTo(DEFAULT_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(DEFAULT_DATE_CREATED);
     }
@@ -268,6 +275,7 @@ class FederationResourceIT {
             .andExpect(jsonPath("$.[*].numberOfNode").value(hasItem(DEFAULT_NUMBER_OF_NODE)))
             .andExpect(jsonPath("$.[*].basePort").value(hasItem(DEFAULT_BASE_PORT.intValue())))
             .andExpect(jsonPath("$.[*].numberOfRegisteredNode").value(hasItem(DEFAULT_NUMBER_OF_REGISTERED_NODE)))
+            .andExpect(jsonPath("$.[*].createdBy").value(hasItem(DEFAULT_CREATED_BY.intValue())))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
             .andExpect(jsonPath("$.[*].dateCreated").value(hasItem(DEFAULT_DATE_CREATED.toString())));
     }
@@ -289,6 +297,7 @@ class FederationResourceIT {
             .andExpect(jsonPath("$.numberOfNode").value(DEFAULT_NUMBER_OF_NODE))
             .andExpect(jsonPath("$.basePort").value(DEFAULT_BASE_PORT.intValue()))
             .andExpect(jsonPath("$.numberOfRegisteredNode").value(DEFAULT_NUMBER_OF_REGISTERED_NODE))
+            .andExpect(jsonPath("$.createdBy").value(DEFAULT_CREATED_BY.intValue()))
             .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE.booleanValue()))
             .andExpect(jsonPath("$.dateCreated").value(DEFAULT_DATE_CREATED.toString()));
     }
@@ -783,6 +792,110 @@ class FederationResourceIT {
 
     @Test
     @Transactional
+    void getAllFederationsByCreatedByIsEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy equals to DEFAULT_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.equals=" + DEFAULT_CREATED_BY);
+
+        // Get all the federationList where createdBy equals to UPDATED_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.equals=" + UPDATED_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy not equals to DEFAULT_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.notEquals=" + DEFAULT_CREATED_BY);
+
+        // Get all the federationList where createdBy not equals to UPDATED_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.notEquals=" + UPDATED_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsInShouldWork() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy in DEFAULT_CREATED_BY or UPDATED_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.in=" + DEFAULT_CREATED_BY + "," + UPDATED_CREATED_BY);
+
+        // Get all the federationList where createdBy equals to UPDATED_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.in=" + UPDATED_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy is not null
+        defaultFederationShouldBeFound("createdBy.specified=true");
+
+        // Get all the federationList where createdBy is null
+        defaultFederationShouldNotBeFound("createdBy.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy is greater than or equal to DEFAULT_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.greaterThanOrEqual=" + DEFAULT_CREATED_BY);
+
+        // Get all the federationList where createdBy is greater than or equal to UPDATED_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.greaterThanOrEqual=" + UPDATED_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy is less than or equal to DEFAULT_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.lessThanOrEqual=" + DEFAULT_CREATED_BY);
+
+        // Get all the federationList where createdBy is less than or equal to SMALLER_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.lessThanOrEqual=" + SMALLER_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsLessThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy is less than DEFAULT_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.lessThan=" + DEFAULT_CREATED_BY);
+
+        // Get all the federationList where createdBy is less than UPDATED_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.lessThan=" + UPDATED_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
+    void getAllFederationsByCreatedByIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        federationRepository.saveAndFlush(federation);
+
+        // Get all the federationList where createdBy is greater than DEFAULT_CREATED_BY
+        defaultFederationShouldNotBeFound("createdBy.greaterThan=" + DEFAULT_CREATED_BY);
+
+        // Get all the federationList where createdBy is greater than SMALLER_CREATED_BY
+        defaultFederationShouldBeFound("createdBy.greaterThan=" + SMALLER_CREATED_BY);
+    }
+
+    @Test
+    @Transactional
     void getAllFederationsByActiveIsEqualToSomething() throws Exception {
         // Initialize the database
         federationRepository.saveAndFlush(federation);
@@ -899,6 +1012,7 @@ class FederationResourceIT {
             .andExpect(jsonPath("$.[*].numberOfNode").value(hasItem(DEFAULT_NUMBER_OF_NODE)))
             .andExpect(jsonPath("$.[*].basePort").value(hasItem(DEFAULT_BASE_PORT.intValue())))
             .andExpect(jsonPath("$.[*].numberOfRegisteredNode").value(hasItem(DEFAULT_NUMBER_OF_REGISTERED_NODE)))
+            .andExpect(jsonPath("$.[*].createdBy").value(hasItem(DEFAULT_CREATED_BY.intValue())))
             .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE.booleanValue())))
             .andExpect(jsonPath("$.[*].dateCreated").value(hasItem(DEFAULT_DATE_CREATED.toString())));
 
@@ -954,6 +1068,7 @@ class FederationResourceIT {
             .numberOfNode(UPDATED_NUMBER_OF_NODE)
             .basePort(UPDATED_BASE_PORT)
             .numberOfRegisteredNode(UPDATED_NUMBER_OF_REGISTERED_NODE)
+            .createdBy(UPDATED_CREATED_BY)
             .active(UPDATED_ACTIVE)
             .dateCreated(UPDATED_DATE_CREATED);
         FederationDTO federationDTO = federationMapper.toDto(updatedFederation);
@@ -975,6 +1090,7 @@ class FederationResourceIT {
         assertThat(testFederation.getNumberOfNode()).isEqualTo(UPDATED_NUMBER_OF_NODE);
         assertThat(testFederation.getBasePort()).isEqualTo(UPDATED_BASE_PORT);
         assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(UPDATED_NUMBER_OF_REGISTERED_NODE);
+        assertThat(testFederation.getCreatedBy()).isEqualTo(UPDATED_CREATED_BY);
         assertThat(testFederation.getActive()).isEqualTo(UPDATED_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
     }
@@ -1056,11 +1172,7 @@ class FederationResourceIT {
         Federation partialUpdatedFederation = new Federation();
         partialUpdatedFederation.setId(federation.getId());
 
-        partialUpdatedFederation
-            .name(UPDATED_NAME)
-            .numberOfNode(UPDATED_NUMBER_OF_NODE)
-            .basePort(UPDATED_BASE_PORT)
-            .dateCreated(UPDATED_DATE_CREATED);
+        partialUpdatedFederation.name(UPDATED_NAME).numberOfNode(UPDATED_NUMBER_OF_NODE).basePort(UPDATED_BASE_PORT).active(UPDATED_ACTIVE);
 
         restFederationMockMvc
             .perform(
@@ -1079,8 +1191,9 @@ class FederationResourceIT {
         assertThat(testFederation.getNumberOfNode()).isEqualTo(UPDATED_NUMBER_OF_NODE);
         assertThat(testFederation.getBasePort()).isEqualTo(UPDATED_BASE_PORT);
         assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(DEFAULT_NUMBER_OF_REGISTERED_NODE);
-        assertThat(testFederation.getActive()).isEqualTo(DEFAULT_ACTIVE);
-        assertThat(testFederation.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
+        assertThat(testFederation.getCreatedBy()).isEqualTo(DEFAULT_CREATED_BY);
+        assertThat(testFederation.getActive()).isEqualTo(UPDATED_ACTIVE);
+        assertThat(testFederation.getDateCreated()).isEqualTo(DEFAULT_DATE_CREATED);
     }
 
     @Test
@@ -1101,6 +1214,7 @@ class FederationResourceIT {
             .numberOfNode(UPDATED_NUMBER_OF_NODE)
             .basePort(UPDATED_BASE_PORT)
             .numberOfRegisteredNode(UPDATED_NUMBER_OF_REGISTERED_NODE)
+            .createdBy(UPDATED_CREATED_BY)
             .active(UPDATED_ACTIVE)
             .dateCreated(UPDATED_DATE_CREATED);
 
@@ -1121,6 +1235,7 @@ class FederationResourceIT {
         assertThat(testFederation.getNumberOfNode()).isEqualTo(UPDATED_NUMBER_OF_NODE);
         assertThat(testFederation.getBasePort()).isEqualTo(UPDATED_BASE_PORT);
         assertThat(testFederation.getNumberOfRegisteredNode()).isEqualTo(UPDATED_NUMBER_OF_REGISTERED_NODE);
+        assertThat(testFederation.getCreatedBy()).isEqualTo(UPDATED_CREATED_BY);
         assertThat(testFederation.getActive()).isEqualTo(UPDATED_ACTIVE);
         assertThat(testFederation.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
     }

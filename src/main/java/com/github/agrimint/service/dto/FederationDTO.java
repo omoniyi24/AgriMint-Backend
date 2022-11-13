@@ -25,6 +25,8 @@ public class FederationDTO implements Serializable {
     @NotNull
     private Integer numberOfRegisteredNode;
 
+    private Long createdBy;
+
     @NotNull
     private Boolean active;
 
@@ -79,6 +81,14 @@ public class FederationDTO implements Serializable {
         this.numberOfRegisteredNode = numberOfRegisteredNode;
     }
 
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public Boolean getActive() {
         return active;
     }
@@ -126,6 +136,7 @@ public class FederationDTO implements Serializable {
             ", numberOfNode=" + getNumberOfNode() +
             ", basePort=" + getBasePort() +
             ", numberOfRegisteredNode=" + getNumberOfRegisteredNode() +
+            ", createdBy=" + getCreatedBy() +
             ", active='" + getActive() + "'" +
             ", dateCreated='" + getDateCreated() + "'" +
             "}";

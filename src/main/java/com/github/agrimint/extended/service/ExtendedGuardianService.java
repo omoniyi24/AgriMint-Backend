@@ -10,5 +10,6 @@ import com.github.agrimint.service.dto.MemberDTO;
  * @author OMONIYI ILESANMI
  */
 public interface ExtendedGuardianService {
-    MemberDTO create(CreatMemberRequestDTO memberDTO) throws MemberAlreadyExistExecption, FederationExecption, UserException;
+    MemberDTO create(CreatMemberRequestDTO memberDTO, boolean active, boolean guardian)
+        throws MemberAlreadyExistExecption, FederationExecption, UserException;
 }

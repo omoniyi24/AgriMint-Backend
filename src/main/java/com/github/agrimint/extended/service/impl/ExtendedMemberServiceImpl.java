@@ -10,6 +10,7 @@ import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedMemberService;
 import com.github.agrimint.extended.util.QueryUtil;
+import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.MemberQueryService;
 import com.github.agrimint.service.MemberService;
@@ -51,26 +52,31 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
     }
 
     @Override
-    public MemberDTO create(CreatMemberRequestDTO creatMemberRequestDTO)
+    public MemberDTO create(CreatMemberRequestDTO creatMemberRequestDTO, boolean active, boolean guardian, boolean checkFederation)
         throws MemberAlreadyExistExecption, FederationExecption, UserException {
-        Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByPhoneNumberAndCountryCode(
-            creatMemberRequestDTO.getCountryCode(),
-            creatMemberRequestDTO.getPhoneNumber()
-        );
+        Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByLogin(currentUserLogin.get());
         if (userByPhoneNumberAndCountryCode.isPresent()) {
             Optional<FederationDTO> federation = federationService.findOne(creatMemberRequestDTO.getFederationId());
             if (federation.isEmpty()) {
                 throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatMemberRequestDTO.getFederationId()));
             }
-            if (federation.get().getActive().equals(Boolean.FALSE)) {
+            if (checkFederation && federation.get().getActive().equals(Boolean.FALSE)) {
                 throw new FederationExecption(String.format(FEDERATION_IS_NOT_ACTIVE, creatMemberRequestDTO.getFederationId()));
+            }
+            AppUserDTO appUserDTO = userByPhoneNumberAndCountryCode.get();
+            Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(appUserDTO.getId());
+            if (memberByUserId.isPresent()) {
+                throw new MemberAlreadyExistExecption("Member Already Exist In System");
             }
             MemberDTO memberDTO = new MemberDTO();
             BeanUtils.copyProperties(creatMemberRequestDTO, memberDTO);
-            memberDTO.setActive(true);
-            memberDTO.setGuardian(false);
+            memberDTO.setPhoneNumber(appUserDTO.getPhoneNumber());
+            memberDTO.setCountryCode(appUserDTO.getCountryCode());
+            memberDTO.setActive(active);
+            memberDTO.setGuardian(guardian);
             memberDTO.setDateCreated(Instant.now());
-            memberDTO.setUserId(userByPhoneNumberAndCountryCode.get().getId());
+            memberDTO.setUserId(appUserDTO.getId());
             MemberDTO savedMember = memberService.save(memberDTO);
             queryUtil.persistFederationMember(creatMemberRequestDTO.getFederationId(), savedMember.getId());
             return savedMember;
