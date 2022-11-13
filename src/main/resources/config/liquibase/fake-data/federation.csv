@@ -1,11 +1,11 @@
-id;name;fedimint_id;number_of_node;base_port;number_of_registered_node;active;date_created
-1;Soft red tangible;dynamic;18394;88908;90494;true;2022-11-04T16:37:27
-2;virtual United;Manager;53105;79090;56927;false;2022-11-04T23:11:42
-3;Investor;Chief Marks;91199;93085;64922;true;2022-11-04T14:43:22
-4;grey Rustic;array;99420;15576;55256;true;2022-11-04T03:49:12
-5;lavender envisioneer demand-driven;infomediaries foreground;72021;36145;85453;false;2022-11-04T22:18:42
-6;Coves Antillian Communications;Kansas sensor Organized;38136;27201;46880;false;2022-11-04T23:05:36
-7;approach;24/365 Metal;88221;90960;80169;false;2022-11-04T09:46:47
-8;Borders secondary HTTP;Books Branch;8290;89315;25727;true;2022-11-04T06:02:07
-9;Avon;Buckinghamshire;31400;87362;24917;true;2022-11-04T01:28:46
-10;Sausages hack Metal;Refined Expanded input;22259;94552;1525;false;2022-11-04T12:43:09
+id;name;fedimint_id;number_of_node;base_port;number_of_registered_node;created_by;active;date_created
+1;Soft red tangible;dynamic;18394;88908;90494;50899;false;2022-11-04T14:24:50
+2;parallelism Security Manager;multi-byte Books;59244;3447;47828;92036;true;2022-11-04T09:36:04
+3;Frozen Market grey;Steel;72066;33369;60963;99420;false;2022-11-04T10:14:01
+4;synthesizing Directives;open-source;90639;34893;44067;68136;false;2022-11-04T17:04:43
+5;innovate PCI;Coves Antillian Communications;95141;56640;30845;59171;true;2022-11-04T11:41:39
+6;Organized morph;Books Intelligent;34041;38586;74454;13173;true;2022-11-04T22:57:39
+7;Forward Dakota withdrawal;fuchsia supply-chains Tasty;8290;89315;25727;57223;true;2022-11-04T15:40:44
+8;Electronics Buckinghamshire;AGP;91733;80948;4503;61766;false;2022-11-04T00:38:15
+9;hack Metal Security;Expanded;74818;75248;98580;22259;true;2022-11-04T23:07:44
+10;Common Account;Wisconsin technologies Group;4376;16250;47019;96719;false;2022-11-04T06:13:59

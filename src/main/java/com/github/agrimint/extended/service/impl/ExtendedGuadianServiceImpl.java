@@ -1,7 +1,5 @@
 package com.github.agrimint.extended.service.impl;
 
-import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_WITH_ID_DOES_NOT_EXIST;
-
 import com.github.agrimint.domain.Member;
 import com.github.agrimint.extended.dto.*;
 import com.github.agrimint.extended.exception.FederationExecption;
@@ -10,9 +8,11 @@ import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.repository.ExtendedMemberRepository;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
+import com.github.agrimint.extended.service.ExtendedMemberService;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.github.agrimint.extended.util.FedimintUtil;
 import com.github.agrimint.extended.util.QueryUtil;
+import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.GuardianService;
 import com.github.agrimint.service.MemberService;
@@ -20,8 +20,6 @@ import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.GuardianDTO;
 import com.github.agrimint.service.dto.MemberDTO;
-import com.github.agrimint.service.mapper.MemberMapper;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +43,7 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
     private final FedimintUtil fedimintUtil;
     private final ExtendedAppUserService extendedAppUserService;
     private final ExtendedMemberRepository extendedMemberRepository;
-    private final MemberMapper memberMapper;
+    private final ExtendedMemberService extendedMemberService;
 
     public ExtendedGuadianServiceImpl(
         MemberService memberService,
@@ -56,7 +54,7 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         FedimintUtil fedimintUtil,
         ExtendedAppUserService extendedAppUserService,
         ExtendedMemberRepository extendedMemberRepository,
-        MemberMapper memberMapper
+        ExtendedMemberService extendedMemberService
     ) {
         this.memberService = memberService;
         this.guardianService = guardianService;
@@ -66,63 +64,41 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         this.fedimintUtil = fedimintUtil;
         this.extendedAppUserService = extendedAppUserService;
         this.extendedMemberRepository = extendedMemberRepository;
-        this.memberMapper = memberMapper;
+        this.extendedMemberService = extendedMemberService;
     }
 
     @Override
-    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO)
+    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO, boolean active, boolean guardian)
         throws MemberAlreadyExistExecption, FederationExecption, UserException {
-        Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByPhoneNumberAndCountryCode(
-            creatGuardianRequestDTO.getCountryCode(),
-            creatGuardianRequestDTO.getPhoneNumber()
-        );
-        if (userByPhoneNumberAndCountryCode.isPresent()) {
-            Optional<FederationDTO> guradianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
-            if (guradianFed.isEmpty()) {
-                throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatGuardianRequestDTO.getFederationId()));
-            }
-            FederationDTO federationDTO = guradianFed.get();
-            CreateGuardianFedimintHttpRequest createFedimintHttpRequest = fedimintUtil.convertToFedimintRequest(
-                creatGuardianRequestDTO,
-                federationDTO
-            );
-            MemberDTO memberDTO = new MemberDTO();
-            BeanUtils.copyProperties(creatGuardianRequestDTO, memberDTO);
-            memberDTO.setActive(false);
-            memberDTO.setGuardian(true);
-            memberDTO.setFedimintId(createFedimintHttpRequest.getFederationId());
-            memberDTO.setDateCreated(Instant.now());
-            memberDTO.setUserId(userByPhoneNumberAndCountryCode.get().getId());
-            memberDTO = memberService.save(memberDTO);
-            if (memberDTO.getGuardian()) {
-                GuardianDTO guardianDTO = new GuardianDTO();
-                guardianDTO.setMemberId(memberDTO.getId());
-                guardianDTO.setInvitationAccepted(false);
-                guardianDTO.setInvitationSent(false);
-                guardianDTO.setSecret(creatGuardianRequestDTO.getSecret());
-                guardianDTO.setNodeNumber(creatGuardianRequestDTO.getNodeNumber());
-                guardianService.save(guardianDTO);
-                int registeredNode = federationDTO.getNumberOfRegisteredNode();
-                int newNumberOfRegisteredNode = registeredNode + 1;
-                federationDTO.setNumberOfRegisteredNode(newNumberOfRegisteredNode);
-                federationDTO = federationService.save(federationDTO);
-            }
-            queryUtil.persistFederationMember(creatGuardianRequestDTO.getFederationId(), memberDTO.getId());
-            if (federationDTO.getNumberOfNode().equals(federationDTO.getNumberOfRegisteredNode())) {
-                log.info("[+] Setting up Fedimint Because All Guardians are available ===>> ");
-                CreateFedimintHttpResponse fedimint = createFedimint(federationDTO);
-                federationDTO.setFedimintId(fedimint.get_id());
-                federationDTO.setBasePort(fedimint.getBasePort());
-                federationDTO.setActive(true);
-                federationDTO = federationService.save(federationDTO);
-                if (fedimint.get_id() != null && StringUtils.isNotBlank(fedimint.get_id())) {
-                    updateGuardian(federationDTO);
-                }
-            }
-            return memberDTO;
-        } else {
-            throw new UserException("User not found");
+        MemberDTO memberDTO = extendedMemberService.create(creatGuardianRequestDTO, false, true, false);
+        Optional<FederationDTO> guardianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
+        FederationDTO federationDTO = guardianFed.get();
+        if (memberDTO.getGuardian()) {
+            GuardianDTO guardianDTO = new GuardianDTO();
+            guardianDTO.setMemberId(memberDTO.getId());
+            guardianDTO.setInvitationAccepted(false);
+            guardianDTO.setInvitationSent(false);
+            guardianDTO.setSecret(creatGuardianRequestDTO.getSecret());
+            guardianDTO.setNodeNumber(creatGuardianRequestDTO.getNodeNumber());
+            guardianService.save(guardianDTO);
+            int registeredNode = federationDTO.getNumberOfRegisteredNode();
+            int newNumberOfRegisteredNode = registeredNode + 1;
+            federationDTO.setNumberOfRegisteredNode(newNumberOfRegisteredNode);
+            federationDTO = federationService.save(federationDTO);
         }
+        queryUtil.persistFederationMember(creatGuardianRequestDTO.getFederationId(), memberDTO.getId());
+        if (federationDTO.getNumberOfNode().equals(federationDTO.getNumberOfRegisteredNode())) {
+            log.info("[+] Setting up Fedimint Because All Guardians are available ===>> ");
+            CreateFedimintHttpResponse fedimint = createFedimint(federationDTO);
+            federationDTO.setFedimintId(fedimint.get_id());
+            federationDTO.setBasePort(fedimint.getBasePort());
+            federationDTO.setActive(true);
+            federationDTO = federationService.save(federationDTO);
+            if (fedimint.get_id() != null && StringUtils.isNotBlank(fedimint.get_id())) {
+                updateGuardian(federationDTO);
+            }
+        }
+        return memberDTO;
     }
 
     private void updateGuardian(FederationDTO federationDTO) {

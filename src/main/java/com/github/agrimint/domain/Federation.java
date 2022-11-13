@@ -37,6 +37,9 @@ public class Federation implements Serializable {
     @Column(name = "number_of_registered_node", nullable = false)
     private Integer numberOfRegisteredNode;
 
+    @Column(name = "created_by")
+    private Long createdBy;
+
     @NotNull
     @Column(name = "active", nullable = false)
     private Boolean active;
@@ -124,6 +127,19 @@ public class Federation implements Serializable {
         this.numberOfRegisteredNode = numberOfRegisteredNode;
     }
 
+    public Long getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public Federation createdBy(Long createdBy) {
+        this.createdBy = createdBy;
+        return this;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public Boolean getActive() {
         return this.active;
     }
@@ -179,6 +195,7 @@ public class Federation implements Serializable {
             ", numberOfNode=" + getNumberOfNode() +
             ", basePort=" + getBasePort() +
             ", numberOfRegisteredNode=" + getNumberOfRegisteredNode() +
+            ", createdBy=" + getCreatedBy() +
             ", active='" + getActive() + "'" +
             ", dateCreated='" + getDateCreated() + "'" +
             "}";

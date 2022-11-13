@@ -25,6 +25,10 @@
       "fieldValidateRules": ["required"]
     },
     {
+      "fieldName": "createdBy",
+      "fieldType": "Long"
+    },
+    {
       "fieldName": "active",
       "fieldType": "Boolean",
       "fieldValidateRules": ["required"]

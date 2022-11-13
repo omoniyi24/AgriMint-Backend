@@ -1,18 +1,18 @@
 package com.github.agrimint.extended.util;
 
 import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
-import com.github.agrimint.service.AppUserQueryService;
-import com.github.agrimint.service.FederationMemberQueryService;
-import com.github.agrimint.service.FederationMemberService;
-import com.github.agrimint.service.FederationQueryService;
+import com.github.agrimint.service.*;
 import com.github.agrimint.service.criteria.AppUserCriteria;
 import com.github.agrimint.service.criteria.FederationCriteria;
 import com.github.agrimint.service.criteria.FederationMemberCriteria;
+import com.github.agrimint.service.criteria.MemberCriteria;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationMemberDTO;
+import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import tech.jhipster.service.filter.BooleanFilter;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
 
@@ -27,17 +27,20 @@ public class QueryUtil {
     private final FederationMemberQueryService federationMemberQueryService;
     private final FederationQueryService federationQueryService;
     private final AppUserQueryService appUserQueryService;
+    private final MemberQueryService memberQueryService;
 
     public QueryUtil(
         FederationMemberService federationMemberService,
         FederationMemberQueryService federationMemberQueryService,
         FederationQueryService federationQueryService,
-        AppUserQueryService appUserQueryService
+        AppUserQueryService appUserQueryService,
+        MemberQueryService memberQueryService
     ) {
         this.federationMemberService = federationMemberService;
         this.federationMemberQueryService = federationMemberQueryService;
         this.federationQueryService = federationQueryService;
         this.appUserQueryService = appUserQueryService;
+        this.memberQueryService = memberQueryService;
     }
 
     public FederationMemberDTO persistFederationMember(Long federationId, Long memberId) throws MemberAlreadyExistExecption {
@@ -107,5 +110,14 @@ public class QueryUtil {
         appUserCriteria.setLogin(loginFilter);
 
         return Optional.ofNullable(appUserQueryService.findByCriteria(appUserCriteria).stream().findFirst().orElse(null));
+    }
+
+    public Optional<MemberDTO> getMemberByUserId(Long userId) {
+        MemberCriteria memberCriteria = new MemberCriteria();
+        LongFilter userIdFilter = new LongFilter();
+        userIdFilter.setEquals(userId);
+        memberCriteria.setUserId(userIdFilter);
+
+        return Optional.ofNullable(memberQueryService.findByCriteria(memberCriteria).stream().findFirst().orElse(null));
     }
 }

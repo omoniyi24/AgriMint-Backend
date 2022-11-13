@@ -37,6 +37,8 @@ public class FederationCriteria implements Serializable, Criteria {
 
     private IntegerFilter numberOfRegisteredNode;
 
+    private LongFilter createdBy;
+
     private BooleanFilter active;
 
     private InstantFilter dateCreated;
@@ -50,6 +52,7 @@ public class FederationCriteria implements Serializable, Criteria {
         this.numberOfNode = other.numberOfNode == null ? null : other.numberOfNode.copy();
         this.basePort = other.basePort == null ? null : other.basePort.copy();
         this.numberOfRegisteredNode = other.numberOfRegisteredNode == null ? null : other.numberOfRegisteredNode.copy();
+        this.createdBy = other.createdBy == null ? null : other.createdBy.copy();
         this.active = other.active == null ? null : other.active.copy();
         this.dateCreated = other.dateCreated == null ? null : other.dateCreated.copy();
     }
@@ -149,6 +152,21 @@ public class FederationCriteria implements Serializable, Criteria {
         this.numberOfRegisteredNode = numberOfRegisteredNode;
     }
 
+    public LongFilter getCreatedBy() {
+        return createdBy;
+    }
+
+    public LongFilter createdBy() {
+        if (createdBy == null) {
+            createdBy = new LongFilter();
+        }
+        return createdBy;
+    }
+
+    public void setCreatedBy(LongFilter createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public BooleanFilter getActive() {
         return active;
     }
@@ -195,6 +213,7 @@ public class FederationCriteria implements Serializable, Criteria {
             Objects.equals(numberOfNode, that.numberOfNode) &&
             Objects.equals(basePort, that.basePort) &&
             Objects.equals(numberOfRegisteredNode, that.numberOfRegisteredNode) &&
+            Objects.equals(createdBy, that.createdBy) &&
             Objects.equals(active, that.active) &&
             Objects.equals(dateCreated, that.dateCreated)
         );
@@ -202,7 +221,7 @@ public class FederationCriteria implements Serializable, Criteria {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, fedimintId, numberOfNode, basePort, numberOfRegisteredNode, active, dateCreated);
+        return Objects.hash(id, name, fedimintId, numberOfNode, basePort, numberOfRegisteredNode, createdBy, active, dateCreated);
     }
 
     // prettier-ignore
@@ -215,6 +234,7 @@ public class FederationCriteria implements Serializable, Criteria {
             (numberOfNode != null ? "numberOfNode=" + numberOfNode + ", " : "") +
             (basePort != null ? "basePort=" + basePort + ", " : "") +
             (numberOfRegisteredNode != null ? "numberOfRegisteredNode=" + numberOfRegisteredNode + ", " : "") +
+            (createdBy != null ? "createdBy=" + createdBy + ", " : "") +
             (active != null ? "active=" + active + ", " : "") +
             (dateCreated != null ? "dateCreated=" + dateCreated + ", " : "") +
             "}";

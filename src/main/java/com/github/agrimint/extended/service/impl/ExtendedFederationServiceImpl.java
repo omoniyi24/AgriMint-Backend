@@ -65,6 +65,7 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
         }
 
         FederationDTO federationDTO = new FederationDTO();
+        federationDTO.setCreatedBy(userByPhoneNumberAndCountryCode.get().getId());
         federationDTO.setNumberOfNode(createFederationRequestDTO.getNumberOfNode());
         federationDTO.setNumberOfRegisteredNode(0);
         federationDTO.setName(createFederationRequestDTO.getName());

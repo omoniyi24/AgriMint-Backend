@@ -20,7 +20,8 @@ public interface ExtendedMemberService {
      * @param memberDTO the entity to save.
      * @return the persisted entity.
      */
-    MemberDTO create(CreatMemberRequestDTO memberDTO) throws MemberAlreadyExistExecption, FederationExecption, UserException;
+    MemberDTO create(CreatMemberRequestDTO memberDTO, boolean active, boolean guardian, boolean checkFederation)
+        throws MemberAlreadyExistExecption, FederationExecption, UserException;
 
     /**
      * Get all the members.
