@@ -25,4 +25,7 @@ public class AdminAppUserDTO {
 
     @NotNull
     private String secret;
+
+    @NotNull
+    private String otp;
 }

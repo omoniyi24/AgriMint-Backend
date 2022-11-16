@@ -2,11 +2,14 @@ package com.github.agrimint.extended.service.impl;
 
 import com.github.agrimint.extended.dto.AdminAppUserDTO;
 import com.github.agrimint.extended.exception.UserException;
+import com.github.agrimint.extended.resources.vm.OtpValidationVM;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
+import com.github.agrimint.extended.service.ExtendedOtpService;
 import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.repository.AppUserRepository;
 import com.github.agrimint.service.AppUserService;
 import com.github.agrimint.service.dto.AppUserDTO;
+import com.github.agrimint.service.dto.OtpRequestDTO;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -24,18 +27,18 @@ public class ExtendedAppUserServiceImpl implements ExtendedAppUserService {
     private final QueryUtil queryUtil;
     private final PasswordEncoder passwordEncoder;
     private final AppUserService appUserService;
-    private final AppUserRepository appUserRepository;
+    private final ExtendedOtpService extendedOtpService;
 
     public ExtendedAppUserServiceImpl(
         QueryUtil queryUtil,
         PasswordEncoder passwordEncoder,
         AppUserService appUserService,
-        AppUserRepository appUserRepository
+        ExtendedOtpService extendedOtpService
     ) {
         this.queryUtil = queryUtil;
         this.passwordEncoder = passwordEncoder;
         this.appUserService = appUserService;
-        this.appUserRepository = appUserRepository;
+        this.extendedOtpService = extendedOtpService;
     }
 
     @Override
@@ -50,12 +53,14 @@ public class ExtendedAppUserServiceImpl implements ExtendedAppUserService {
 
     @Override
     public AppUserDTO createAppUser(AdminAppUserDTO userDTO) throws UserException {
-        Optional<AppUserDTO> userByPhoneNumberAndCountryCode = findUserByPhoneNumberAndCountryCode(
-            userDTO.getCountryCode(),
-            userDTO.getPhoneNumber()
-        );
-        if (userByPhoneNumberAndCountryCode.isPresent()) {
-            throw new UserException("User Already Exist");
+        OtpValidationVM otpResponseVM = new OtpValidationVM();
+        otpResponseVM.setOtp(userDTO.getOtp());
+        otpResponseVM.setOtpType("REG");
+        otpResponseVM.setCountryCode(userDTO.getCountryCode());
+        otpResponseVM.setPhoneNumber(userDTO.getPhoneNumber());
+        OtpRequestDTO otpRequestDTO = extendedOtpService.validateOtp(otpResponseVM);
+        if (otpRequestDTO == null || !otpRequestDTO.getStatus().equals("DONE")) {
+            throw new UserException("Invalid OTP");
         }
 
         AppUserDTO newAppUserDTO = new AppUserDTO();
