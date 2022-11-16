@@ -31,7 +31,7 @@ public class SMSHttpServiceImpl implements SMSHttpService {
     }
 
     @Override
-    public SmsResponseDTO send(SmsRequestDTO smsRequestDTO) throws FederationExecption {
+    public void send(SmsRequestDTO smsRequestDTO) throws FederationExecption {
         String payload = gson.toJson(smsRequestDTO);
         log.info("SMS request payload {} on url: {} ", payload, this.sendSmsUrl);
         try {
@@ -41,7 +41,7 @@ public class SMSHttpServiceImpl implements SMSHttpService {
             if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
                 String responsePayload = postForEntity.getBody();
                 log.info("SMS response body {} ", responsePayload);
-                return gson.fromJson(responsePayload, SmsResponseDTO.class);
+                //                SmsResponseDTO smsResponseDTO = gson.fromJson(responsePayload, SmsResponseDTO.class);
             }
             throw new SmsException("Failed to send sms");
         } catch (Exception e) {
