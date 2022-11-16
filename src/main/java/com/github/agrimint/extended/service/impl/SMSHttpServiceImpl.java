@@ -31,6 +31,7 @@ public class SMSHttpServiceImpl implements SMSHttpService {
     }
 
     @Override
+    //TODO call Valetin's endpoint
     public void send(SmsRequestDTO smsRequestDTO) throws FederationExecption {
         String payload = gson.toJson(smsRequestDTO);
         log.info("SMS request payload {} on url: {} ", payload, this.sendSmsUrl);
