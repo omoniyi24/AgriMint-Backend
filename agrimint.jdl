@@ -60,6 +60,17 @@ entity Privilege(app_privilege) {
   group String
 }
 
+entity OtpRequest {
+	phoneNumber String required,
+	countryCode String required,
+	otp String required,
+	otpType String required,
+    otpLength Integer required,
+    status String required,
+    dateValidated Instant
+}
+
+
 relationship ManyToMany{
     AppUser {authorities(name)} to Role {users},
     Role {authorities(name)} to Privilege {roles}

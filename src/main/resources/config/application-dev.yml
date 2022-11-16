@@ -133,3 +133,6 @@ fedimint:
   createGuardianUrl: ${fedimint.baseUrl}/federations/guardians
   joinFederationUrl: ${fedimint.baseUrl}/guardians/%s/federations/joined
   excahngeKeyUrl: ${fedimint.baseUrl}/guardians/%s/keys/exchange
+
+ussd:
+  sendSmsUrl: 'http://localhost:3000/api'
