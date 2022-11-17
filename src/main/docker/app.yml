@@ -20,7 +20,7 @@ services:
       - SPRING_LIQUIBASE_URL=jdbc:h2:file:/var/lib/data/h2db/db/agrimint
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
     ports:
-      - 127.0.0.1:8081:8081
+      - 0.0.0.0:8081:8081
 #  jhipster-registry:
 #    image: jhipster/jhipster-registry:v6.7.1
 #    volumes:
