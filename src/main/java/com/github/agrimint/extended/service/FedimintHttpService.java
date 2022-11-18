@@ -14,9 +14,7 @@ public interface FedimintHttpService {
     CreateGuardianFedimintHttpResponse createGuardian(CreateGuardianFedimintHttpRequest createFedimintHttpRequest)
         throws FederationExecption;
 
-    GetConnectionFedimintHttpResponse joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
-        throws FederationExecption;
+    boolean joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId) throws FederationExecption;
 
-    boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
-        throws FederationExecption;
+    boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId) throws FederationExecption;
 }
