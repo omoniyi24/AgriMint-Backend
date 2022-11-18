@@ -7,4 +7,9 @@ import lombok.Data;
  */
 
 @Data
-public class JoinFedimintHttpRequest extends CreateGuardianFedimintHttpRequest {}
+public class JoinFedimintHttpRequest {
+
+    private Integer node;
+    private String federationId;
+    private String secret;
+}

@@ -15,8 +15,8 @@ public interface ExtendedMemberRepository extends MemberRepository {
     @Query(
         "select new com.github.agrimint.extended.dto.ExtendedGuardianDTO (m.id, m.name, m.federationId, m.fedimintId, " +
         "m.userId, m.phoneNumber, m.countryCode, m.active, m.guardian, m.dateCreated, g.nodeNumber, g.secret, " +
-        "g.invitationSent, g.invitationAccepted) from Member m " +
-        "left join Guardian g on m.id=g.memberId where m.federationId =:federationId " +
+        "g.invitationSent, g.invitationAccepted, g.id, g.memberId, f.fedimintId) from Member m " +
+        "left join Guardian g on m.id=g.memberId left join Federation f on m.federationId=f.id where m.federationId =:federationId " +
         "and m.guardian =:guardian  and m.active =:active "
     )
     List<ExtendedGuardianDTO> findByFederationIdAndGuardianAndActive(

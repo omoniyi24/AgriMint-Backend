@@ -33,8 +33,8 @@ public class AuthenticationResource {
         JWTToken tokenInfo = null;
 
         Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByPhoneNumberAndCountryCode(
-            accessTokenRequest.getCountryCode(),
-            accessTokenRequest.getPhoneNumber()
+            accessTokenRequest.getPhoneNumber(),
+            accessTokenRequest.getCountryCode()
         );
         if (userByPhoneNumberAndCountryCode.isPresent()) {
             AppUserDTO profile = userByPhoneNumberAndCountryCode.get();

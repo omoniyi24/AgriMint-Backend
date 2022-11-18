@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
  */
 public interface ExtendedAppUserRepository extends AppUserRepository {
     Optional<AppUser> findOneWithAuthoritiesByLogin(String login);
+
+    Optional<AppUser> findByPhoneNumberAndCountryCode(String phoneNumber, String countryCode);
 }

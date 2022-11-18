@@ -130,7 +130,7 @@ fedimint:
   baseUrl: 'http://46.101.210.143:3000/api'
   createFederationUrl: ${fedimint.baseUrl}/federations
   connectionUrl: ${fedimint.baseUrl}/federations/%s/connection-info
-  createGuardianUrl: ${fedimint.baseUrl}/federations/guardians
+  createGuardianUrl: ${fedimint.baseUrl}/guardians
   joinFederationUrl: ${fedimint.baseUrl}/guardians/%s/federations/joined
   excahngeKeyUrl: ${fedimint.baseUrl}/guardians/%s/keys/exchange
 

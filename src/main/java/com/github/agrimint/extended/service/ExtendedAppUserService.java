@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author OMONIYI ILESANMI
  */
 public interface ExtendedAppUserService {
-    Optional<AppUserDTO> findUserByPhoneNumberAndCountryCode(String countryCode, String phoneNumber);
+    Optional<AppUserDTO> findUserByPhoneNumberAndCountryCode(String phoneNumber, String countryCode);
 
     AppUserDTO createAppUser(AdminAppUserDTO userDTO) throws UserException;
 

@@ -42,7 +42,7 @@ public class ExtendedAppUserServiceImpl implements ExtendedAppUserService {
     }
 
     @Override
-    public Optional<AppUserDTO> findUserByPhoneNumberAndCountryCode(String countryCode, String phoneNumber) {
+    public Optional<AppUserDTO> findUserByPhoneNumberAndCountryCode(String phoneNumber, String countryCode) {
         return queryUtil.getUserByPhoneNumberAndCountryCode(phoneNumber, countryCode);
     }
 

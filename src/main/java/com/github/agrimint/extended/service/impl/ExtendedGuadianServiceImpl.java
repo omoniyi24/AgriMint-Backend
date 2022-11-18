@@ -1,5 +1,6 @@
 package com.github.agrimint.extended.service.impl;
 
+import com.github.agrimint.domain.Guardian;
 import com.github.agrimint.domain.Member;
 import com.github.agrimint.extended.dto.*;
 import com.github.agrimint.extended.exception.FederationExecption;
@@ -12,11 +13,11 @@ import com.github.agrimint.extended.service.ExtendedMemberService;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.github.agrimint.extended.util.FedimintUtil;
 import com.github.agrimint.extended.util.QueryUtil;
-import com.github.agrimint.security.SecurityUtils;
+import com.github.agrimint.repository.GuardianRepository;
+import com.github.agrimint.repository.MemberRepository;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.GuardianService;
 import com.github.agrimint.service.MemberService;
-import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.GuardianDTO;
 import com.github.agrimint.service.dto.MemberDTO;
@@ -43,6 +44,8 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
     private final FedimintUtil fedimintUtil;
     private final ExtendedAppUserService extendedAppUserService;
     private final ExtendedMemberRepository extendedMemberRepository;
+    private final MemberRepository memberRepository;
+    private final GuardianRepository guardianRepository;
     private final ExtendedMemberService extendedMemberService;
 
     public ExtendedGuadianServiceImpl(
@@ -54,6 +57,8 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         FedimintUtil fedimintUtil,
         ExtendedAppUserService extendedAppUserService,
         ExtendedMemberRepository extendedMemberRepository,
+        MemberRepository memberRepository,
+        GuardianRepository guardianRepository,
         ExtendedMemberService extendedMemberService
     ) {
         this.memberService = memberService;
@@ -64,6 +69,8 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         this.fedimintUtil = fedimintUtil;
         this.extendedAppUserService = extendedAppUserService;
         this.extendedMemberRepository = extendedMemberRepository;
+        this.memberRepository = memberRepository;
+        this.guardianRepository = guardianRepository;
         this.extendedMemberService = extendedMemberService;
     }
 
@@ -107,21 +114,74 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
             true,
             false
         );
-        List<Member> updatedGuardians = new ArrayList<>();
+        List<Member> updatedGuardianMembers = new ArrayList<>();
+        List<Guardian> updatedGuardians = new ArrayList<>();
         if (byFedimintIdAndGuardianAndActive.size() == federationDTO.getNumberOfNode()) {
-            byFedimintIdAndGuardianAndActive.forEach(
-                eachGuardian -> {
-                    CreateGuardianFedimintHttpResponse guardian = createGuardian(federationDTO, eachGuardian);
-                    Member member = new Member();
-                    BeanUtils.copyProperties(eachGuardian, member);
-                    member.setFedimintId(guardian.get_id());
-                    member.setFederationId(federationDTO.getId());
-                    member.setActive(true);
-                    updatedGuardians.add(member);
-                }
+            for (int nodeNumber = 0; nodeNumber < byFedimintIdAndGuardianAndActive.size(); nodeNumber++) {
+                ExtendedGuardianDTO eachGuardian = byFedimintIdAndGuardianAndActive.get(nodeNumber);
+                int newNodeNumber = nodeNumber + 1;
+                CreateGuardianFedimintHttpResponse guardian = createGuardian(federationDTO, eachGuardian, newNodeNumber);
+                Member member = new Member();
+                BeanUtils.copyProperties(eachGuardian, member);
+                member.setId(eachGuardian.getId());
+                member.setFedimintId(guardian.get_id());
+                member.setFederationId(federationDTO.getId());
+                member.setActive(true);
+                updatedGuardianMembers.add(member);
+                Guardian guardianDTO = new Guardian();
+                guardianDTO.setId(eachGuardian.getGuardianId());
+                guardianDTO.setMemberId(eachGuardian.getGuardianMemberId());
+                guardianDTO.setSecret(eachGuardian.getSecret());
+                guardianDTO.setNodeNumber(newNodeNumber);
+                guardianDTO.setInvitationSent(true);
+                guardianDTO.setInvitationAccepted(true);
+                updatedGuardians.add(guardianDTO);
+            }
+
+            List<Member> members = memberRepository.saveAll(updatedGuardianMembers);
+            log.info("[+} ===> members {} ", members);
+            List<Guardian> guardians = guardianRepository.saveAll(updatedGuardians);
+            log.info("[+} ===> guardians {} ", guardians);
+
+            List<ExtendedGuardianDTO> byFedimintIdAndGuardianAndActiveLatest = extendedMemberRepository.findByFederationIdAndGuardianAndActive(
+                federationDTO.getId(),
+                true,
+                true
             );
+
+            //Todo call key exchange for each guardian
+            for (int i = 0; i < byFedimintIdAndGuardianAndActiveLatest.size(); i++) {
+                ExtendedGuardianDTO eachGuardian = byFedimintIdAndGuardianAndActiveLatest.get(i);
+                log.info("[+} ===> {} ", eachGuardian);
+                JoinFedimintHttpRequest joinFedimintHttpRequest = new JoinFedimintHttpRequest();
+                joinFedimintHttpRequest.setFederationId(eachGuardian.getFedimintFederationCode());
+                joinFedimintHttpRequest.setSecret(String.valueOf(eachGuardian.getSecret()));
+                joinFedimintHttpRequest.setNode(eachGuardian.getNodeNumber());
+                fedimintHttpService.exchangeKeys(joinFedimintHttpRequest, eachGuardian.getFedimintId());
+                log.info(
+                    "[+] User: {} with node number: {} exchanged key for federation:  {} successfully...",
+                    eachGuardian.getUserId(),
+                    eachGuardian.getNodeNumber(),
+                    eachGuardian.getFederationId()
+                );
+            }
+
+            //Todo join each guardian to federation
+            for (int i = 0; i < byFedimintIdAndGuardianAndActiveLatest.size(); i++) {
+                ExtendedGuardianDTO eachGuardian = byFedimintIdAndGuardianAndActiveLatest.get(i);
+                JoinFedimintHttpRequest joinFedimintHttpRequest = new JoinFedimintHttpRequest();
+                joinFedimintHttpRequest.setFederationId(eachGuardian.getFedimintFederationCode());
+                joinFedimintHttpRequest.setSecret(String.valueOf(eachGuardian.getSecret()));
+                joinFedimintHttpRequest.setNode(eachGuardian.getNodeNumber());
+                fedimintHttpService.joinFederation(joinFedimintHttpRequest, eachGuardian.getFedimintId());
+                log.info(
+                    "[+] User: {} with node number: {} joined federation: {} successfully...",
+                    eachGuardian.getUserId(),
+                    eachGuardian.getNodeNumber(),
+                    eachGuardian.getFederationId()
+                );
+            }
         }
-        extendedMemberRepository.saveAll(updatedGuardians);
     }
 
     private CreateFedimintHttpResponse createFedimint(FederationDTO federationDTO) {
@@ -129,11 +189,15 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         return fedimintHttpService.createFedimint(createFedimintHttpRequest);
     }
 
-    private CreateGuardianFedimintHttpResponse createGuardian(FederationDTO federationDTO, ExtendedGuardianDTO extendedGuardianDTO) {
+    private CreateGuardianFedimintHttpResponse createGuardian(
+        FederationDTO federationDTO,
+        ExtendedGuardianDTO extendedGuardianDTO,
+        Integer nodeNumber
+    ) {
         CreateGuardianFedimintHttpRequest createGuardianFedimintHttpRequest = new CreateGuardianFedimintHttpRequest();
         createGuardianFedimintHttpRequest.setFederationId(federationDTO.getFedimintId());
-        createGuardianFedimintHttpRequest.setSecret(extendedGuardianDTO.getSecret());
-        createGuardianFedimintHttpRequest.setNode(extendedGuardianDTO.getNodeNumber());
+        createGuardianFedimintHttpRequest.setSecret(String.valueOf(extendedGuardianDTO.getSecret()));
+        createGuardianFedimintHttpRequest.setNode(nodeNumber);
         createGuardianFedimintHttpRequest.setName(extendedGuardianDTO.getName());
         return fedimintHttpService.createGuardian(createGuardianFedimintHttpRequest);
     }
