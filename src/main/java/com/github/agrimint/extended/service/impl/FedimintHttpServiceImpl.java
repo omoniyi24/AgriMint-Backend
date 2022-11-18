@@ -107,8 +107,7 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    public GetConnectionFedimintHttpResponse joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
-        throws FederationExecption {
+    public boolean joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId) throws FederationExecption {
         String payload = gson.toJson(joinFedimintHttpRequest);
         try {
             String url = String.format(this.joinFederationUrl, guadianFedimintId);
@@ -116,10 +115,10 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
             log.info("joinFederation request payload {} on url: {} ", entity, url);
             ResponseEntity<String> postForEntity = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
             log.info("joinFederation RAW response payload {} ", postForEntity);
-            if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
+            if (postForEntity.getStatusCode().equals(HttpStatus.OK)) {
                 String responsePayload = postForEntity.getBody();
                 log.info("joinFederation response body {} ", responsePayload);
-                return gson.fromJson(responsePayload, GetConnectionFedimintHttpResponse.class);
+                return true;
             }
             throw new FederationExecption("Failed to Join Federation");
         } catch (Exception e) {
@@ -129,8 +128,7 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    public boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
-        throws FederationExecption {
+    public boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId) throws FederationExecption {
         String payload = gson.toJson(joinFedimintHttpRequest);
         try {
             String url = String.format(this.excahngeKeyUrl, guadianFedimintId);
