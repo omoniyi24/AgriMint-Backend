@@ -129,8 +129,7 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    @Async
-    public GetConnectionFedimintHttpResponse exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
+    public boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
         throws FederationExecption {
         String payload = gson.toJson(joinFedimintHttpRequest);
         try {
@@ -139,10 +138,10 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
             log.info("exchangeKeys request payload {} on url: {}", entity, url);
             ResponseEntity<String> postForEntity = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
             log.info("exchangeKeys RAW response payload {} ", postForEntity);
-            if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
+            if (postForEntity.getStatusCode().equals(HttpStatus.OK)) {
                 String responsePayload = postForEntity.getBody();
                 log.info("exchangeKeys response body {} ", responsePayload);
-                return gson.fromJson(responsePayload, GetConnectionFedimintHttpResponse.class);
+                return true;
             }
             throw new FederationExecption("Failed to exchange Federation");
         } catch (Exception e) {

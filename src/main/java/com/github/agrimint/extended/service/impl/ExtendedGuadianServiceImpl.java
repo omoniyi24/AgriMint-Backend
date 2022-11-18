@@ -22,9 +22,15 @@ import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.GuardianDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import lombok.extern.slf4j.Slf4j;
+import rx.Completable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -150,6 +156,7 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
             );
 
             //Todo call key exchange for each guardian
+            List<CompletableFuture<Boolean>> exchanges = new ArrayList<>();
             for (int i = 0; i < byFedimintIdAndGuardianAndActiveLatest.size(); i++) {
                 ExtendedGuardianDTO eachGuardian = byFedimintIdAndGuardianAndActiveLatest.get(i);
                 log.info("[+} ===> {} ", eachGuardian);
@@ -157,7 +164,9 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
                 joinFedimintHttpRequest.setFederationId(eachGuardian.getFedimintFederationCode());
                 joinFedimintHttpRequest.setSecret(String.valueOf(eachGuardian.getSecret()));
                 joinFedimintHttpRequest.setNode(eachGuardian.getNodeNumber());
-                fedimintHttpService.exchangeKeys(joinFedimintHttpRequest, eachGuardian.getFedimintId());
+                CompletableFuture<Boolean> exchange = CompletableFuture
+                                                    .supplyAsync(() -> fedimintHttpService.exchangeKeys(joinFedimintHttpRequest, eachGuardian.getFedimintId()));
+                exchanges.add(exchange);
                 log.info(
                     "[+] User: {} with node number: {} exchanged key for federation:  {} successfully...",
                     eachGuardian.getUserId(),
@@ -166,20 +175,35 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
                 );
             }
 
-            //Todo join each guardian to federation
-            for (int i = 0; i < byFedimintIdAndGuardianAndActiveLatest.size(); i++) {
-                ExtendedGuardianDTO eachGuardian = byFedimintIdAndGuardianAndActiveLatest.get(i);
-                JoinFedimintHttpRequest joinFedimintHttpRequest = new JoinFedimintHttpRequest();
-                joinFedimintHttpRequest.setFederationId(eachGuardian.getFedimintFederationCode());
-                joinFedimintHttpRequest.setSecret(String.valueOf(eachGuardian.getSecret()));
-                joinFedimintHttpRequest.setNode(eachGuardian.getNodeNumber());
-                fedimintHttpService.joinFederation(joinFedimintHttpRequest, eachGuardian.getFedimintId());
-                log.info(
-                    "[+] User: {} with node number: {} joined federation: {} successfully...",
-                    eachGuardian.getUserId(),
-                    eachGuardian.getNodeNumber(),
-                    eachGuardian.getFederationId()
-                );
+            boolean exchangeSucceeded = true;
+            for (CompletableFuture<Boolean> exchangeFuture : exchanges) {
+                boolean result = false;
+                try {
+                    result = exchangeFuture.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    log.error(e.getStackTrace().toString());
+                }
+                exchangeSucceeded &= result;
+            }
+
+            if (exchangeSucceeded) {
+                //Todo join each guardian to federation
+                for (int i = 0; i < byFedimintIdAndGuardianAndActiveLatest.size(); i++) {
+                    ExtendedGuardianDTO eachGuardian = byFedimintIdAndGuardianAndActiveLatest.get(i);
+                    JoinFedimintHttpRequest joinFedimintHttpRequest = new JoinFedimintHttpRequest();
+                    joinFedimintHttpRequest.setFederationId(eachGuardian.getFedimintFederationCode());
+                    joinFedimintHttpRequest.setSecret(String.valueOf(eachGuardian.getSecret()));
+                    joinFedimintHttpRequest.setNode(eachGuardian.getNodeNumber());
+                    fedimintHttpService.joinFederation(joinFedimintHttpRequest, eachGuardian.getFedimintId());
+                    log.info(
+                        "[+] User: {} with node number: {} joined federation: {} successfully...",
+                        eachGuardian.getUserId(),
+                        eachGuardian.getNodeNumber(),
+                        eachGuardian.getFederationId()
+                    );
+                }
+            } else {
+                throw new FederationExecption("Failed keys exchange for federation with id: " + federationDTO.getId());
             }
         }
     }
