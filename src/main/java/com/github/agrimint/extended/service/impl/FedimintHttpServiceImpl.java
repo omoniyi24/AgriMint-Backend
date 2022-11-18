@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -106,12 +107,14 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    public GetConnectionFedimintHttpResponse joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest) throws FederationExecption {
+    public GetConnectionFedimintHttpResponse joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
+        throws FederationExecption {
         String payload = gson.toJson(joinFedimintHttpRequest);
-        log.info("joinFederation request payload {} on url: {} ", payload, this.joinFederationUrl);
         try {
+            String url = String.format(this.joinFederationUrl, guadianFedimintId);
             HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());
-            ResponseEntity<String> postForEntity = restTemplate.postForEntity(this.joinFederationUrl, entity, String.class);
+            log.info("joinFederation request payload {} on url: {} ", entity, url);
+            ResponseEntity<String> postForEntity = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
             log.info("joinFederation RAW response payload {} ", postForEntity);
             if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
                 String responsePayload = postForEntity.getBody();
@@ -126,12 +129,15 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     }
 
     @Override
-    public GetConnectionFedimintHttpResponse exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest) throws FederationExecption {
+    @Async
+    public GetConnectionFedimintHttpResponse exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
+        throws FederationExecption {
         String payload = gson.toJson(joinFedimintHttpRequest);
-        log.info("exchangeKeys request payload {} on url: {} ", payload, this.excahngeKeyUrl);
         try {
+            String url = String.format(this.excahngeKeyUrl, guadianFedimintId);
             HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());
-            ResponseEntity<String> postForEntity = restTemplate.postForEntity(this.excahngeKeyUrl, entity, String.class);
+            log.info("exchangeKeys request payload {} on url: {}", entity, url);
+            ResponseEntity<String> postForEntity = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
             log.info("exchangeKeys RAW response payload {} ", postForEntity);
             if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
                 String responsePayload = postForEntity.getBody();

@@ -39,6 +39,12 @@ public class ExtendedGuardianDTO implements Serializable {
 
     private Boolean invitationAccepted;
 
+    private Long guardianId;
+
+    private Long guardianMemberId;
+
+    private String fedimintFederationCode;
+
     public ExtendedGuardianDTO(
         Long id,
         String name,
@@ -53,7 +59,10 @@ public class ExtendedGuardianDTO implements Serializable {
         Integer nodeNumber,
         Integer secret,
         Boolean invitationSent,
-        Boolean invitationAccepted
+        Boolean invitationAccepted,
+        Long guardianId,
+        Long guardianMemberId,
+        String fedimintFederationCode
     ) {
         this.id = id;
         this.name = name;
@@ -69,5 +78,8 @@ public class ExtendedGuardianDTO implements Serializable {
         this.secret = secret;
         this.invitationSent = invitationSent;
         this.invitationAccepted = invitationAccepted;
+        this.guardianId = guardianId;
+        this.guardianMemberId = guardianMemberId;
+        this.fedimintFederationCode = fedimintFederationCode;
     }
 }

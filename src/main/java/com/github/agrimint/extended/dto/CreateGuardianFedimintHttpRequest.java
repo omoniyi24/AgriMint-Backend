@@ -12,5 +12,5 @@ public class CreateGuardianFedimintHttpRequest {
     private String name;
     private Integer node;
     private String federationId;
-    private Integer secret;
+    private String secret;
 }
