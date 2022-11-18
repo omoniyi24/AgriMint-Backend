@@ -17,6 +17,6 @@ public interface FedimintHttpService {
     GetConnectionFedimintHttpResponse joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
         throws FederationExecption;
 
-    GetConnectionFedimintHttpResponse exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
+    boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId)
         throws FederationExecption;
 }
