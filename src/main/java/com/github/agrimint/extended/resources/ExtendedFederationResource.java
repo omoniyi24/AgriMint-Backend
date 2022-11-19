@@ -4,6 +4,7 @@ import com.github.agrimint.extended.dto.CreateFederationRequestDTO;
 import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
 import com.github.agrimint.extended.exception.FederationExecption;
 import com.github.agrimint.extended.service.ExtendedFederationService;
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.service.criteria.FederationCriteria;
 import com.github.agrimint.service.dto.FederationDTO;
 import java.net.URI;
@@ -26,7 +27,7 @@ import tech.jhipster.web.util.PaginationUtil;
  * REST controller for managing {@link com.github.agrimint.domain.Federation}.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL)
 public class ExtendedFederationResource {
 
     private final Logger log = LoggerFactory.getLogger(ExtendedFederationResource.class);

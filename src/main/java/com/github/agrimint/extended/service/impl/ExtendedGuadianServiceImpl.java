@@ -4,7 +4,7 @@ import com.github.agrimint.domain.Guardian;
 import com.github.agrimint.domain.Member;
 import com.github.agrimint.extended.dto.*;
 import com.github.agrimint.extended.exception.FederationExecption;
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.repository.ExtendedMemberRepository;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
@@ -22,15 +22,11 @@ import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.GuardianDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 import lombok.extern.slf4j.Slf4j;
-import rx.Completable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -82,7 +78,7 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
 
     @Override
     public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO, boolean active, boolean guardian)
-        throws MemberAlreadyExistExecption, FederationExecption, UserException {
+        throws MemberExecption, FederationExecption, UserException {
         MemberDTO memberDTO = extendedMemberService.create(creatGuardianRequestDTO, false, true, false);
         Optional<FederationDTO> guardianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
         FederationDTO federationDTO = guardianFed.get();
@@ -164,8 +160,9 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
                 joinFedimintHttpRequest.setFederationId(eachGuardian.getFedimintFederationCode());
                 joinFedimintHttpRequest.setSecret(String.valueOf(eachGuardian.getSecret()));
                 joinFedimintHttpRequest.setNode(eachGuardian.getNodeNumber());
-                CompletableFuture<Boolean> exchange = CompletableFuture
-                                                    .supplyAsync(() -> fedimintHttpService.exchangeKeys(joinFedimintHttpRequest, eachGuardian.getFedimintId()));
+                CompletableFuture<Boolean> exchange = CompletableFuture.supplyAsync(
+                    () -> fedimintHttpService.exchangeKeys(joinFedimintHttpRequest, eachGuardian.getFedimintId())
+                );
                 exchanges.add(exchange);
                 log.info(
                     "[+] User: {} with node number: {} exchanged key for federation:  {} successfully...",

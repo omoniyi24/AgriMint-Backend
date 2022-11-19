@@ -5,7 +5,7 @@ import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
 import com.github.agrimint.extended.exception.FederationExecption;
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedMemberService;
@@ -53,7 +53,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
 
     @Override
     public MemberDTO create(CreatMemberRequestDTO creatMemberRequestDTO, boolean active, boolean guardian, boolean checkFederation)
-        throws MemberAlreadyExistExecption, FederationExecption, UserException {
+        throws MemberExecption, FederationExecption, UserException {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByLogin(currentUserLogin.get());
         if (userByPhoneNumberAndCountryCode.isPresent()) {
@@ -67,7 +67,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
             AppUserDTO appUserDTO = userByPhoneNumberAndCountryCode.get();
             Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(appUserDTO.getId());
             if (memberByUserId.isPresent()) {
-                throw new MemberAlreadyExistExecption("Member Already Exist In System");
+                throw new MemberExecption("Member Already Exist In System");
             }
             MemberDTO memberDTO = new MemberDTO();
             BeanUtils.copyProperties(creatMemberRequestDTO, memberDTO);

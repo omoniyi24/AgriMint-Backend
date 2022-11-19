@@ -2,8 +2,9 @@ package com.github.agrimint.extended.resources;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
 import com.github.agrimint.extended.exception.FederationExecption;
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.service.ExtendedGuardianService;
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.service.dto.MemberDTO;
 import com.github.agrimint.web.rest.GuardianResource;
 import java.net.URI;
@@ -23,7 +24,7 @@ import tech.jhipster.web.util.HeaderUtil;
  * REST controller for managing {@link com.github.agrimint.domain.Guardian}.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL)
 public class ExtendedGuardianResource {
 
     private static final String ENTITY_NAME = "agriMintGuardian";
@@ -46,7 +47,7 @@ public class ExtendedGuardianResource {
      */
     @PostMapping("/guardian")
     public ResponseEntity<?> createGuardian(@Valid @RequestBody CreatMemberRequestDTO guardianDTO)
-        throws URISyntaxException, MemberAlreadyExistExecption, FederationExecption {
+        throws URISyntaxException, MemberExecption, FederationExecption {
         log.debug("REST request to save Guardian : {}", guardianDTO);
 
         MemberDTO result = guardianService.create(guardianDTO, false, true);

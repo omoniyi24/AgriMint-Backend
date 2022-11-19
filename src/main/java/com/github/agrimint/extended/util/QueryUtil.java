@@ -1,6 +1,6 @@
 package com.github.agrimint.extended.util;
 
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.service.*;
 import com.github.agrimint.service.criteria.AppUserCriteria;
 import com.github.agrimint.service.criteria.FederationCriteria;
@@ -12,7 +12,6 @@ import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import tech.jhipster.service.filter.BooleanFilter;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
 
@@ -43,9 +42,9 @@ public class QueryUtil {
         this.memberQueryService = memberQueryService;
     }
 
-    public FederationMemberDTO persistFederationMember(Long federationId, Long memberId) throws MemberAlreadyExistExecption {
+    public FederationMemberDTO persistFederationMember(Long federationId, Long memberId) throws MemberExecption {
         if (getFederationMemberCount(federationId, memberId) > 0) {
-            throw new MemberAlreadyExistExecption("Member Already Exist In Federation");
+            throw new MemberExecption("Member Already Exist In Federation");
         }
         FederationMemberDTO federationMemberDTO = new FederationMemberDTO();
         federationMemberDTO.setMemberId(memberId);
@@ -117,6 +116,19 @@ public class QueryUtil {
         LongFilter userIdFilter = new LongFilter();
         userIdFilter.setEquals(userId);
         memberCriteria.setUserId(userIdFilter);
+
+        return Optional.ofNullable(memberQueryService.findByCriteria(memberCriteria).stream().findFirst().orElse(null));
+    }
+
+    public Optional<MemberDTO> getMemberByUserIdAndFederationId(Long userId, Long federationId) {
+        MemberCriteria memberCriteria = new MemberCriteria();
+        LongFilter userIdFilter = new LongFilter();
+        userIdFilter.setEquals(userId);
+        memberCriteria.setUserId(userIdFilter);
+
+        LongFilter federationIdFilter = new LongFilter();
+        federationIdFilter.setEquals(federationId);
+        memberCriteria.setFederationId(federationIdFilter);
 
         return Optional.ofNullable(memberQueryService.findByCriteria(memberCriteria).stream().findFirst().orElse(null));
     }

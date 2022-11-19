@@ -3,6 +3,7 @@ package com.github.agrimint.extended.resources;
 import com.github.agrimint.extended.dto.AdminAppUserDTO;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -43,7 +44,7 @@ import org.springframework.web.bind.annotation.*;
  * Another option would be to have a specific JPA entity graph to handle this case.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL)
 public class UserResource {
 
     private static final List<String> ALLOWED_ORDERED_PROPERTIES = Collections.unmodifiableList(
