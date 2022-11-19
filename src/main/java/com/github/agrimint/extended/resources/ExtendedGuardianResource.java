@@ -14,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 
 /**
@@ -46,11 +43,13 @@ public class ExtendedGuardianResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/guardian")
-    public ResponseEntity<?> createGuardian(@Valid @RequestBody CreatMemberRequestDTO guardianDTO)
-        throws URISyntaxException, MemberExecption, FederationExecption {
+    public ResponseEntity<?> createGuardian(
+        @Valid @RequestBody CreatMemberRequestDTO guardianDTO,
+        @RequestParam(value = "invitationCode", required = false) String invitationCode
+    ) throws URISyntaxException, MemberExecption, FederationExecption {
         log.debug("REST request to save Guardian : {}", guardianDTO);
 
-        MemberDTO result = guardianService.create(guardianDTO, false, true);
+        MemberDTO result = guardianService.create(guardianDTO, false, true, invitationCode);
 
         return ResponseEntity
             .created(new URI("/api/members/" + result.getId()))

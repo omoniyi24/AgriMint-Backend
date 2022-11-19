@@ -2,16 +2,15 @@ package com.github.agrimint.extended.util;
 
 import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.service.*;
-import com.github.agrimint.service.criteria.AppUserCriteria;
-import com.github.agrimint.service.criteria.FederationCriteria;
-import com.github.agrimint.service.criteria.FederationMemberCriteria;
-import com.github.agrimint.service.criteria.MemberCriteria;
+import com.github.agrimint.service.criteria.*;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationMemberDTO;
+import com.github.agrimint.service.dto.InviteDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import tech.jhipster.service.filter.BooleanFilter;
 import tech.jhipster.service.filter.LongFilter;
 import tech.jhipster.service.filter.StringFilter;
 
@@ -27,19 +26,22 @@ public class QueryUtil {
     private final FederationQueryService federationQueryService;
     private final AppUserQueryService appUserQueryService;
     private final MemberQueryService memberQueryService;
+    private final InviteQueryService inviteQueryService;
 
     public QueryUtil(
         FederationMemberService federationMemberService,
         FederationMemberQueryService federationMemberQueryService,
         FederationQueryService federationQueryService,
         AppUserQueryService appUserQueryService,
-        MemberQueryService memberQueryService
+        MemberQueryService memberQueryService,
+        InviteQueryService inviteQueryService
     ) {
         this.federationMemberService = federationMemberService;
         this.federationMemberQueryService = federationMemberQueryService;
         this.federationQueryService = federationQueryService;
         this.appUserQueryService = appUserQueryService;
         this.memberQueryService = memberQueryService;
+        this.inviteQueryService = inviteQueryService;
     }
 
     public FederationMemberDTO persistFederationMember(Long federationId, Long memberId) throws MemberExecption {
@@ -131,5 +133,26 @@ public class QueryUtil {
         memberCriteria.setFederationId(federationIdFilter);
 
         return Optional.ofNullable(memberQueryService.findByCriteria(memberCriteria).stream().findFirst().orElse(null));
+    }
+
+    public Optional<InviteDTO> getInvitationCode(String phoneNumber, String countryCode, String code) {
+        InviteCriteria inviteCriteria = new InviteCriteria();
+        StringFilter phoneNumberFilter = new StringFilter();
+        phoneNumberFilter.setEquals(phoneNumber);
+        inviteCriteria.setPhoneNumber(phoneNumberFilter);
+
+        StringFilter countryCodeFilter = new StringFilter();
+        countryCodeFilter.setEquals(countryCode);
+        inviteCriteria.setCountryCode(countryCodeFilter);
+
+        StringFilter invitationCodeFilter = new StringFilter();
+        invitationCodeFilter.setEquals(code);
+        inviteCriteria.setInvitationCode(invitationCodeFilter);
+
+        BooleanFilter activeFilter = new BooleanFilter();
+        activeFilter.setEquals(true);
+        inviteCriteria.setActive(activeFilter);
+
+        return Optional.ofNullable(inviteQueryService.findByCriteria(inviteCriteria).stream().findFirst().orElse(null));
     }
 }

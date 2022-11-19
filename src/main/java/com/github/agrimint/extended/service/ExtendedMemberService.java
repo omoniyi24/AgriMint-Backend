@@ -20,7 +20,7 @@ public interface ExtendedMemberService {
      * @param memberDTO the entity to save.
      * @return the persisted entity.
      */
-    MemberDTO create(CreatMemberRequestDTO memberDTO, boolean active, boolean guardian, boolean checkFederation)
+    MemberDTO create(CreatMemberRequestDTO memberDTO, boolean active, boolean guardian, boolean checkFederation, String invitationCode)
         throws MemberExecption, FederationExecption, UserException;
 
     /**

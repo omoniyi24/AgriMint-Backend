@@ -77,9 +77,9 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
     }
 
     @Override
-    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO, boolean active, boolean guardian)
+    public MemberDTO create(CreatMemberRequestDTO creatGuardianRequestDTO, boolean active, boolean guardian, String invitationCode)
         throws MemberExecption, FederationExecption, UserException {
-        MemberDTO memberDTO = extendedMemberService.create(creatGuardianRequestDTO, false, true, false);
+        MemberDTO memberDTO = extendedMemberService.create(creatGuardianRequestDTO, false, true, false, invitationCode);
         Optional<FederationDTO> guardianFed = federationService.findOne(creatGuardianRequestDTO.getFederationId());
         FederationDTO federationDTO = guardianFed.get();
         if (memberDTO.getGuardian()) {

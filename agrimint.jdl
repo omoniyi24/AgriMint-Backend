@@ -70,6 +70,14 @@ entity OtpRequest {
     dateValidated Instant
 }
 
+entity Invite {
+	phoneNumber String required,
+	countryCode String required,
+	invitationCode String required,
+	federationId Long required,
+    active Boolean required
+}
+
 
 relationship ManyToMany{
     AppUser {authorities(name)} to Role {users},

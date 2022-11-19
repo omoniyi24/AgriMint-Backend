@@ -66,7 +66,7 @@ public class ExtendedMemberResource {
     public ResponseEntity<?> createMember(@Valid @RequestBody CreatMemberRequestDTO memberDTO) throws URISyntaxException, MemberExecption {
         log.debug("REST request to save Member : {}", memberDTO);
 
-        MemberDTO result = memberService.create(memberDTO, true, false, true);
+        MemberDTO result = memberService.create(memberDTO, true, false, true, null);
         return ResponseEntity
             .created(new URI("/api/members/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

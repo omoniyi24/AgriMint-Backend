@@ -7,7 +7,7 @@ import lombok.Data;
  */
 
 @Data
-public class InviteDTO {
+public class ExtendedInviteDTO {
 
     private String phoneNumber;
     private String countryCode;
