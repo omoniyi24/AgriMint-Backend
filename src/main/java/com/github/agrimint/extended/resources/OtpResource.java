@@ -14,6 +14,7 @@ import com.github.agrimint.service.dto.OtpRequestDTO;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +46,7 @@ public class OtpResource {
             otpRequestVM.getCountryCode()
         );
         if (userByPhoneNumberAndCountryCode.isPresent()) {
-            throw new UserException("User Already Exist");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
         OtpResponseVM otpResponseVM = extendedOtpService.generateOtp(otpRequestVM);
         SmsRequestDTO smsRequestDTO = new SmsRequestDTO();
