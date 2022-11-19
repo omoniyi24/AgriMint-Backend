@@ -2,7 +2,7 @@ package com.github.agrimint.extended.service;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
 import com.github.agrimint.extended.exception.FederationExecption;
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.service.criteria.MemberCriteria;
 import com.github.agrimint.service.dto.MemberDTO;
@@ -20,8 +20,8 @@ public interface ExtendedMemberService {
      * @param memberDTO the entity to save.
      * @return the persisted entity.
      */
-    MemberDTO create(CreatMemberRequestDTO memberDTO, boolean active, boolean guardian, boolean checkFederation)
-        throws MemberAlreadyExistExecption, FederationExecption, UserException;
+    MemberDTO create(CreatMemberRequestDTO memberDTO, boolean active, boolean guardian, boolean checkFederation, String invitationCode)
+        throws MemberExecption, FederationExecption, UserException;
 
     /**
      * Get all the members.

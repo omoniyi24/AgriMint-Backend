@@ -1,10 +1,9 @@
 package com.github.agrimint.extended.resources;
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
-import com.github.agrimint.extended.exception.FederationExecption;
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
-import com.github.agrimint.extended.exception.UserException;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.service.ExtendedMemberService;
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.repository.MemberRepository;
 import com.github.agrimint.service.MemberQueryService;
 import com.github.agrimint.service.criteria.MemberCriteria;
@@ -30,7 +29,7 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.github.agrimint.domain.Member}.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL)
 public class ExtendedMemberResource {
 
     private final Logger log = LoggerFactory.getLogger(ExtendedMemberResource.class);
@@ -64,11 +63,10 @@ public class ExtendedMemberResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/member")
-    public ResponseEntity<?> createMember(@Valid @RequestBody CreatMemberRequestDTO memberDTO)
-        throws URISyntaxException, MemberAlreadyExistExecption {
+    public ResponseEntity<?> createMember(@Valid @RequestBody CreatMemberRequestDTO memberDTO) throws URISyntaxException, MemberExecption {
         log.debug("REST request to save Member : {}", memberDTO);
 
-        MemberDTO result = memberService.create(memberDTO, true, false, true);
+        MemberDTO result = memberService.create(memberDTO, true, false, true, null);
         return ResponseEntity
             .created(new URI("/api/members/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

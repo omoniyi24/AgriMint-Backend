@@ -1,5 +1,6 @@
 package com.github.agrimint.extended.resources;
 
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 
 @RestController
-@RequestMapping("/api/v1/wallet")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL + "/wallet")
 public class WalletResource {
 
     private final Logger log = LoggerFactory.getLogger(ExtendedMemberResource.class);

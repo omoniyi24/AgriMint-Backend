@@ -8,6 +8,7 @@ import com.github.agrimint.extended.resources.vm.OtpValidationVM;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedOtpService;
 import com.github.agrimint.extended.service.SMSHttpService;
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.OtpRequestDTO;
 import java.util.Optional;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/otp")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL + "/otp")
 public class OtpResource {
 
     private final ExtendedOtpService extendedOtpService;

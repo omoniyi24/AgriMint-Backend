@@ -5,21 +5,24 @@ import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_
 
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
 import com.github.agrimint.extended.exception.FederationExecption;
-import com.github.agrimint.extended.exception.MemberAlreadyExistExecption;
+import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedMemberService;
 import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationService;
+import com.github.agrimint.service.InviteService;
 import com.github.agrimint.service.MemberQueryService;
 import com.github.agrimint.service.MemberService;
 import com.github.agrimint.service.criteria.MemberCriteria;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationDTO;
+import com.github.agrimint.service.dto.InviteDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,27 +39,53 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
     private final FederationService federationService;
     private final QueryUtil queryUtil;
     private final ExtendedAppUserService extendedAppUserService;
+    private final InviteService inviteService;
 
     public ExtendedMemberServiceImpl(
         MemberService memberService,
         MemberQueryService memberQueryService,
         FederationService federationService,
         QueryUtil queryUtil,
-        ExtendedAppUserService extendedAppUserService
+        ExtendedAppUserService extendedAppUserService,
+        InviteService inviteService
     ) {
         this.memberService = memberService;
         this.memberQueryService = memberQueryService;
         this.federationService = federationService;
         this.queryUtil = queryUtil;
         this.extendedAppUserService = extendedAppUserService;
+        this.inviteService = inviteService;
     }
 
     @Override
-    public MemberDTO create(CreatMemberRequestDTO creatMemberRequestDTO, boolean active, boolean guardian, boolean checkFederation)
-        throws MemberAlreadyExistExecption, FederationExecption, UserException {
+    public MemberDTO create(
+        CreatMemberRequestDTO creatMemberRequestDTO,
+        boolean active,
+        boolean guardian,
+        boolean checkFederation,
+        String invitationCode
+    ) throws MemberExecption, FederationExecption, UserException {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();
         Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByLogin(currentUserLogin.get());
+
         if (userByPhoneNumberAndCountryCode.isPresent()) {
+            AppUserDTO appUserDTO = userByPhoneNumberAndCountryCode.get();
+            if (StringUtils.isNotBlank(invitationCode)) {
+                Optional<InviteDTO> savedInvitationCode = queryUtil.getInvitationCode(
+                    appUserDTO.getPhoneNumber(),
+                    appUserDTO.getCountryCode(),
+                    invitationCode
+                );
+                if (savedInvitationCode.isPresent()) {
+                    InviteDTO inviteDTO = savedInvitationCode.get();
+                    creatMemberRequestDTO.setFederationId(inviteDTO.getFederationId());
+                    inviteDTO.setActive(false);
+                    inviteService.save(inviteDTO);
+                } else {
+                    throw new UserException("Invalid Invitation Code");
+                }
+            }
+
             Optional<FederationDTO> federation = federationService.findOne(creatMemberRequestDTO.getFederationId());
             if (federation.isEmpty()) {
                 throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatMemberRequestDTO.getFederationId()));
@@ -64,10 +93,10 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
             if (checkFederation && federation.get().getActive().equals(Boolean.FALSE)) {
                 throw new FederationExecption(String.format(FEDERATION_IS_NOT_ACTIVE, creatMemberRequestDTO.getFederationId()));
             }
-            AppUserDTO appUserDTO = userByPhoneNumberAndCountryCode.get();
+
             Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(appUserDTO.getId());
             if (memberByUserId.isPresent()) {
-                throw new MemberAlreadyExistExecption("Member Already Exist In System");
+                throw new MemberExecption("Member Already Exist In System");
             }
             MemberDTO memberDTO = new MemberDTO();
             BeanUtils.copyProperties(creatMemberRequestDTO, memberDTO);

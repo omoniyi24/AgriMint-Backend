@@ -37,7 +37,7 @@
     "jwtSecretKey": "{secrets.JWT_SECRET}",
     "languages": ["en"],
     "otherModules": [],
-    "entities": ["Member", "Guardian", "Federation", "FederationMember", "AppUser", "Role", "Privilege", "OtpRequest"],
-    "lastLiquibaseTimestamp": 1668623164000
+    "entities": ["Member", "Guardian", "Federation", "FederationMember", "AppUser", "Role", "Privilege", "OtpRequest", "Invite"],
+    "lastLiquibaseTimestamp": 1668873816000
   }
 }

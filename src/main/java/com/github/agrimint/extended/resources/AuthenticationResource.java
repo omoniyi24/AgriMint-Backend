@@ -5,6 +5,7 @@ import com.github.agrimint.extended.dto.JWTToken;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.auth.AccessTokenService;
 import com.github.agrimint.extended.service.auth.ExtendedRefreshTokenService;
+import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.dto.AppUserDTO;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApplicationUrl.BASE_CONTEXT_URL)
 public class AuthenticationResource {
 
     private final AccessTokenService accessTokenService;
