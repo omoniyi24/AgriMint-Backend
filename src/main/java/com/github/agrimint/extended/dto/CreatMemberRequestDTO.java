@@ -13,7 +13,6 @@ import lombok.Data;
 @Data
 public class CreatMemberRequestDTO implements Serializable {
 
-    @NotNull
     private Long federationId;
 
     @NotNull

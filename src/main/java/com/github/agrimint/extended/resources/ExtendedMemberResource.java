@@ -63,10 +63,13 @@ public class ExtendedMemberResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/member")
-    public ResponseEntity<?> createMember(@Valid @RequestBody CreatMemberRequestDTO memberDTO) throws URISyntaxException, MemberExecption {
+    public ResponseEntity<?> createMember(
+        @Valid @RequestBody CreatMemberRequestDTO memberDTO,
+        @RequestParam(value = "invitationCode", required = false) String invitationCode
+    ) throws URISyntaxException, MemberExecption {
         log.debug("REST request to save Member : {}", memberDTO);
 
-        MemberDTO result = memberService.create(memberDTO, true, false, true, null);
+        MemberDTO result = memberService.create(memberDTO, true, false, true, invitationCode);
         return ResponseEntity
             .created(new URI("/api/members/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
