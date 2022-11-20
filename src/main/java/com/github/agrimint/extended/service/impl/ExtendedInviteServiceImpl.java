@@ -1,12 +1,13 @@
 package com.github.agrimint.extended.service.impl;
 
 import com.github.agrimint.extended.dto.ExtendedInviteDTO;
+import com.github.agrimint.extended.dto.SmsRequestDTO;
 import com.github.agrimint.extended.exception.FederationExecption;
 import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedInviteService;
-import com.github.agrimint.extended.util.Base64Util;
+import com.github.agrimint.extended.service.SMSHttpService;
 import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationService;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,21 +30,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExtendedInviteServiceImpl implements ExtendedInviteService {
 
+    @Value("${notification.template.invitation}")
+    private String invitationTemplate;
+
     private final ExtendedAppUserService extendedAppUserService;
     private final FederationService federationService;
     private final QueryUtil queryUtil;
     private final InviteService inviteService;
+    private final SMSHttpService smsHttpService;
 
     public ExtendedInviteServiceImpl(
         ExtendedAppUserService extendedAppUserService,
         FederationService federationService,
         QueryUtil queryUtil,
-        InviteService inviteService
+        InviteService inviteService,
+        SMSHttpService smsHttpService
     ) {
         this.extendedAppUserService = extendedAppUserService;
         this.federationService = federationService;
         this.queryUtil = queryUtil;
         this.inviteService = inviteService;
+        this.smsHttpService = smsHttpService;
     }
 
     @Override
@@ -70,10 +78,15 @@ public class ExtendedInviteServiceImpl implements ExtendedInviteService {
                 inviteDTO.setActive(true);
                 inviteDTO.setFederationId(memberDTO.getFederationId());
                 inviteService.save(inviteDTO);
-                //                long random = System.currentTimeMillis();
                 String id = String.format("%s", inviteDTO.getInvitationCode());
-                //                String base64Response = Base64Util.ecryptTeamActivationKey(id);
                 response.put("invitationCode", id);
+
+                SmsRequestDTO smsRequestDTO = new SmsRequestDTO();
+                smsRequestDTO.setCountryCode(inviteDTO.getCountryCode());
+                smsRequestDTO.setPhoneNumber(inviteDTO.getPhoneNumber());
+                String message = String.format(invitationTemplate, federationDTO.get().getName(), id);
+                smsRequestDTO.setMessage(message);
+                smsHttpService.send(smsRequestDTO);
             } else {
                 throw new MemberExecption("Member not found");
             }
