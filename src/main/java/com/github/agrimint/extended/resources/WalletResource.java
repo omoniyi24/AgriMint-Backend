@@ -35,7 +35,7 @@ public class WalletResource {
         return ResponseEntity.ok(memberBalance);
     }
 
-    @GetMapping("federation/{federationId}/invoice")
+    @PostMapping("federation/{federationId}/invoice")
     public ResponseEntity<CreateInvoiceResponse> generateFederationUserInvoice(
         @PathVariable Long federationId,
         @Valid @RequestBody CreateInvoiceDTO createInvoiceDTO
@@ -45,7 +45,7 @@ public class WalletResource {
         return ResponseEntity.ok(createInvoiceResponse);
     }
 
-    @GetMapping("federation/{federationId}/invoice")
+    @PostMapping("federation/{federationId}/pay")
     public ResponseEntity<PayInvoiceResponse> payFederationUserInvoice(
         @PathVariable Long federationId,
         @Valid @RequestBody PayInvoiceDTO payInvoiceDTO
