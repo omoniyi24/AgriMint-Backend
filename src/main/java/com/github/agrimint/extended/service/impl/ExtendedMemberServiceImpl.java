@@ -105,6 +105,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
             memberDTO.setPhoneNumber(appUserDTO.getPhoneNumber());
             memberDTO.setCountryCode(appUserDTO.getCountryCode());
             memberDTO.setGuardian(guardian);
+            memberDTO.setActive(false);
             memberDTO.setDateCreated(Instant.now());
             memberDTO.setUserId(appUserDTO.getId());
             MemberDTO savedMember = memberService.save(memberDTO);
