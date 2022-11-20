@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserUtil {
 
-    private ExtendedAppUserService extendedAppUserService;
+    private final ExtendedAppUserService extendedAppUserService;
+
+    public UserUtil(ExtendedAppUserService extendedAppUserService) {
+        this.extendedAppUserService = extendedAppUserService;
+    }
 
     public AppUserDTO getLoggedInUser() {
         Optional<String> currentUserLogin = SecurityUtils.getCurrentUserLogin();

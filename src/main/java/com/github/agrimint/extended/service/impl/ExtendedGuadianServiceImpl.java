@@ -104,7 +104,11 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
             federationDTO.setActive(true);
             federationDTO = federationService.save(federationDTO);
             if (fedimint.get_id() != null && StringUtils.isNotBlank(fedimint.get_id())) {
-                updateGuardian(federationDTO);
+                try {
+                    updateGuardian(federationDTO);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
         }
         return memberDTO;

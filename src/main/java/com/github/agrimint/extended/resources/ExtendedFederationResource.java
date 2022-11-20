@@ -72,9 +72,8 @@ public class ExtendedFederationResource {
     @GetMapping("/federations")
     public ResponseEntity<List<FederationDTO>> getAllFederations(FederationCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Federations by criteria: {}", criteria);
-        Page<FederationDTO> page = federationService.getAll(criteria, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<FederationDTO> federationDTOS = federationService.getAll(criteria, pageable);
+        return ResponseEntity.ok().body(federationDTOS);
     }
 
     @GetMapping("/federation/{id}/connection")

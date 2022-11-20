@@ -9,10 +9,13 @@ import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.repository.AppUserRepository;
 import com.github.agrimint.service.AppUserService;
 import com.github.agrimint.service.dto.AppUserDTO;
+import com.github.agrimint.service.dto.MemberDTO;
 import com.github.agrimint.service.dto.OtpRequestDTO;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,15 +55,17 @@ public class ExtendedAppUserServiceImpl implements ExtendedAppUserService {
     }
 
     @Override
-    public AppUserDTO createAppUser(AdminAppUserDTO userDTO) throws UserException {
-        OtpValidationVM otpResponseVM = new OtpValidationVM();
-        otpResponseVM.setOtp(userDTO.getOtp());
-        otpResponseVM.setOtpType("REG");
-        otpResponseVM.setCountryCode(userDTO.getCountryCode());
-        otpResponseVM.setPhoneNumber(userDTO.getPhoneNumber());
-        OtpRequestDTO otpRequestDTO = extendedOtpService.validateOtp(otpResponseVM);
-        if (otpRequestDTO == null || !otpRequestDTO.getStatus().equals("DONE")) {
-            throw new UserException("Invalid OTP");
+    public AppUserDTO createAppUser(AdminAppUserDTO userDTO, String channel) throws UserException {
+        if (StringUtils.isBlank(channel) || !channel.equalsIgnoreCase("USSD")) {
+            OtpValidationVM otpResponseVM = new OtpValidationVM();
+            otpResponseVM.setOtp(userDTO.getOtp());
+            otpResponseVM.setOtpType("REG");
+            otpResponseVM.setCountryCode(userDTO.getCountryCode());
+            otpResponseVM.setPhoneNumber(userDTO.getPhoneNumber());
+            OtpRequestDTO otpRequestDTO = extendedOtpService.validateOtp(otpResponseVM);
+            if (otpRequestDTO == null || !otpRequestDTO.getStatus().equals("DONE")) {
+                throw new UserException("Invalid OTP");
+            }
         }
 
         AppUserDTO newAppUserDTO = new AppUserDTO();

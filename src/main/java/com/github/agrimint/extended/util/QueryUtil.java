@@ -8,6 +8,7 @@ import com.github.agrimint.service.dto.FederationMemberDTO;
 import com.github.agrimint.service.dto.InviteDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
 import tech.jhipster.service.filter.BooleanFilter;
@@ -113,13 +114,13 @@ public class QueryUtil {
         return Optional.ofNullable(appUserQueryService.findByCriteria(appUserCriteria).stream().findFirst().orElse(null));
     }
 
-    public Optional<MemberDTO> getMemberByUserId(Long userId) {
+    public List<MemberDTO> getMemberByUserId(Long userId) {
         MemberCriteria memberCriteria = new MemberCriteria();
         LongFilter userIdFilter = new LongFilter();
         userIdFilter.setEquals(userId);
         memberCriteria.setUserId(userIdFilter);
 
-        return Optional.ofNullable(memberQueryService.findByCriteria(memberCriteria).stream().findFirst().orElse(null));
+        return memberQueryService.findByCriteria(memberCriteria);
     }
 
     public Optional<MemberDTO> getMemberByUserIdAndFederationId(Long userId, Long federationId) {
