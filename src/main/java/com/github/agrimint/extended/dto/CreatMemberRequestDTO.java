@@ -20,7 +20,5 @@ public class CreatMemberRequestDTO implements Serializable {
 
     private String alias;
 
-    private Integer nodeNumber;
-
     private Integer secret;
 }

@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -88,7 +89,7 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
             guardianDTO.setInvitationAccepted(false);
             guardianDTO.setInvitationSent(false);
             guardianDTO.setSecret(creatGuardianRequestDTO.getSecret());
-            guardianDTO.setNodeNumber(creatGuardianRequestDTO.getNodeNumber());
+            guardianDTO.setNodeNumber(1);
             guardianService.save(guardianDTO);
             int registeredNode = federationDTO.getNumberOfRegisteredNode();
             int newNumberOfRegisteredNode = registeredNode + 1;
@@ -114,7 +115,8 @@ public class ExtendedGuadianServiceImpl implements ExtendedGuardianService {
         return memberDTO;
     }
 
-    private void updateGuardian(FederationDTO federationDTO) {
+    @Async
+    void updateGuardian(FederationDTO federationDTO) {
         List<ExtendedGuardianDTO> byFedimintIdAndGuardianAndActive = extendedMemberRepository.findByFederationIdAndGuardianAndActive(
             federationDTO.getId(),
             true,

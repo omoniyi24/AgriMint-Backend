@@ -34,7 +34,7 @@ public class FedimintUtil {
     ) {
         CreateGuardianFedimintHttpRequest createFedimintHttpRequest = new CreateGuardianFedimintHttpRequest();
         createFedimintHttpRequest.setName(creatGuardianRequestDTO.getName());
-        createFedimintHttpRequest.setNode(creatGuardianRequestDTO.getNodeNumber());
+        createFedimintHttpRequest.setNode(1);
         createFedimintHttpRequest.setSecret(String.valueOf(creatGuardianRequestDTO.getSecret()));
         createFedimintHttpRequest.setFederationId(federationDTO.getFedimintId());
         return createFedimintHttpRequest;
