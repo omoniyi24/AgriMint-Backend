@@ -1,8 +1,6 @@
 package com.github.agrimint.extended.service.impl;
 
 import com.github.agrimint.extended.dto.CreateFederationRequestDTO;
-import com.github.agrimint.extended.dto.CreateFedimintHttpRequest;
-import com.github.agrimint.extended.dto.CreateFedimintHttpResponse;
 import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
 import com.github.agrimint.extended.exception.FederationExecption;
 import com.github.agrimint.extended.exception.UserException;
@@ -11,13 +9,17 @@ import com.github.agrimint.extended.service.ExtendedFederationService;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.github.agrimint.extended.util.FedimintUtil;
 import com.github.agrimint.extended.util.QueryUtil;
+import com.github.agrimint.extended.util.UserUtil;
 import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationQueryService;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.criteria.FederationCriteria;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationDTO;
+import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
     private final FedimintUtil fedimintUtil;
     private final FedimintHttpService fedimintHttpService;
     private final QueryUtil queryUtil;
+    private final UserUtil userUtil;
     private final ExtendedAppUserService extendedAppUserService;
 
     public ExtendedFederationServiceImpl(
@@ -42,6 +45,7 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
         FedimintUtil fedimintUtil,
         FedimintHttpService fedimintHttpService,
         QueryUtil queryUtil,
+        UserUtil userUtil,
         ExtendedAppUserService extendedAppUserService
     ) {
         this.federationService = federationService;
@@ -49,6 +53,7 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
         this.fedimintUtil = fedimintUtil;
         this.fedimintHttpService = fedimintHttpService;
         this.queryUtil = queryUtil;
+        this.userUtil = userUtil;
         this.extendedAppUserService = extendedAppUserService;
     }
 
@@ -75,8 +80,21 @@ public class ExtendedFederationServiceImpl implements ExtendedFederationService 
     }
 
     @Override
-    public Page<FederationDTO> getAll(FederationCriteria criteria, Pageable pageable) {
-        return federationQueryService.findByCriteria(criteria, pageable);
+    public List<FederationDTO> getAll(FederationCriteria criteria, Pageable pageable) {
+        AppUserDTO loggedInUser = userUtil.getLoggedInUser();
+        List<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(loggedInUser.getId());
+        List<FederationDTO> allFed = new ArrayList<>();
+        memberByUserId
+            .stream()
+            .forEach(
+                eachMember -> {
+                    Optional<FederationDTO> federation = federationService.findOne(eachMember.getFederationId());
+                    if (federation.isPresent()) {
+                        allFed.add(federation.get());
+                    }
+                }
+            );
+        return allFed;
     }
 
     @Override

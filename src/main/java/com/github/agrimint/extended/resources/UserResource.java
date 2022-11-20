@@ -5,6 +5,7 @@ import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.util.ApplicationUrl;
 import com.github.agrimint.service.dto.AppUserDTO;
+import com.github.agrimint.service.dto.MemberDTO;
 import com.github.agrimint.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing users.
@@ -76,7 +78,10 @@ public class UserResource {
      */
     @PostMapping("/user")
     //    @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-    public ResponseEntity<AppUserDTO> createUser(@Valid @RequestBody AdminAppUserDTO userDTO) throws URISyntaxException, UserException {
+    public ResponseEntity<AppUserDTO> createUser(
+        @Valid @RequestBody AdminAppUserDTO userDTO,
+        @RequestHeader(value = "channel", required = false) String channel
+    ) throws URISyntaxException, UserException {
         log.debug("REST request to save User : {}", userDTO);
 
         Optional<AppUserDTO> userByPhoneNumberAndCountryCode = extendedAppUserService.findUserByPhoneNumberAndCountryCode(
@@ -86,7 +91,7 @@ public class UserResource {
         if (userByPhoneNumberAndCountryCode.isPresent()) {
             throw new UserException("User Already Exist");
         } else {
-            AppUserDTO appUser = extendedAppUserService.createAppUser(userDTO);
+            AppUserDTO appUser = extendedAppUserService.createAppUser(userDTO, channel);
             return ResponseEntity.created(new URI("/api/user/" + appUser.getId())).build();
         }
     }

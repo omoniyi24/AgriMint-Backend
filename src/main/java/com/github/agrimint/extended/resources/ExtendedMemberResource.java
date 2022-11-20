@@ -80,15 +80,13 @@ public class ExtendedMemberResource {
      * {@code GET  /members} : get all the members.
      *
      * @param pageable the pagination information.
-     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of members in body.
      */
-    @GetMapping("/members")
-    public ResponseEntity<List<MemberDTO>> getAllMembers(MemberCriteria criteria, Pageable pageable) {
-        log.debug("REST request to get Members by criteria: {}", criteria);
-        Page<MemberDTO> page = memberService.getAll(criteria, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    @GetMapping("/member/federation/{federationId}")
+    public ResponseEntity<List<MemberDTO>> getAllMembers(@PathVariable Long federationId, Pageable pageable) {
+        log.debug("REST request to get Members by criteria: {}", federationId);
+        List<MemberDTO> memberDTOS = memberService.getAll(federationId, pageable);
+        return ResponseEntity.ok().body(memberDTOS);
     }
 
     /**

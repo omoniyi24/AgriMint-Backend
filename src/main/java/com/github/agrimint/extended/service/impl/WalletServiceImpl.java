@@ -41,7 +41,7 @@ public class WalletServiceImpl implements WalletService {
     public MemberHoldingResponse getMemberBalance(Long federationId) {
         FederationDTO federationDTO = federationUtil.getFederation(federationId, true);
         AppUserDTO loggedInUser = userUtil.getLoggedInUser();
-        Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(loggedInUser.getId());
+        Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationDTO.getId());
         if (memberByUserId.isPresent()) {
             return fedimintHttpService.getMemberHoldingInfo(
                 String.valueOf(memberByUserId.get().getId()),
@@ -55,7 +55,7 @@ public class WalletServiceImpl implements WalletService {
     public CreateInvoiceResponse generateInvoice(Long federationId, CreateInvoiceDTO createInvoiceDTO) {
         FederationDTO federationDTO = federationUtil.getFederation(federationId, true);
         AppUserDTO loggedInUser = userUtil.getLoggedInUser();
-        Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(loggedInUser.getId());
+        Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationDTO.getId());
         if (memberByUserId.isPresent()) {
             CreateInvoiceHttpRequest createInvoiceHttpRequest = new CreateInvoiceHttpRequest();
             createInvoiceHttpRequest.setFederationId(federationDTO.getFedimintId());
@@ -71,7 +71,7 @@ public class WalletServiceImpl implements WalletService {
     public PayInvoiceResponse payInvoice(Long federationId, PayInvoiceDTO payInvoiceDTO) {
         FederationDTO federationDTO = federationUtil.getFederation(federationId, true);
         AppUserDTO loggedInUser = userUtil.getLoggedInUser();
-        Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(loggedInUser.getId());
+        Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationDTO.getId());
         if (memberByUserId.isPresent()) {
             PayInvoiceHttpRequest payInvoiceHttpRequest = new PayInvoiceHttpRequest();
             payInvoiceHttpRequest.setInvoice(payInvoiceDTO.getLnInvoice());

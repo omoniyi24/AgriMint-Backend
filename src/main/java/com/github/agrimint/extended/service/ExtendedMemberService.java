@@ -6,6 +6,7 @@ import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.service.criteria.MemberCriteria;
 import com.github.agrimint.service.dto.MemberDTO;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +30,7 @@ public interface ExtendedMemberService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<MemberDTO> getAll(MemberCriteria criteria, Pageable pageable);
+    List<MemberDTO> getAll(Long federationId, Pageable pageable);
 
     /**
      * Get the "id" member.

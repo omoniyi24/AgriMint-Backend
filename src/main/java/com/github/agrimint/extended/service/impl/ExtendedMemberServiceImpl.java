@@ -12,6 +12,7 @@ import com.github.agrimint.extended.service.ExtendedMemberService;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.github.agrimint.extended.util.FederationUtil;
 import com.github.agrimint.extended.util.QueryUtil;
+import com.github.agrimint.extended.util.UserUtil;
 import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationService;
 import com.github.agrimint.service.InviteService;
@@ -23,12 +24,15 @@ import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.InviteDTO;
 import com.github.agrimint.service.dto.MemberDTO;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import tech.jhipster.service.filter.LongFilter;
 
 /**
  * @author OMONIYI ILESANMI
@@ -41,6 +45,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
     private final FederationService federationService;
     private final FederationUtil federationUtil;
     private final QueryUtil queryUtil;
+    private final UserUtil userUtil;
     private final ExtendedAppUserService extendedAppUserService;
     private final InviteService inviteService;
     private final FedimintHttpService fedimintHttpService;
@@ -51,6 +56,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
         FederationService federationService,
         FederationUtil federationUtil,
         QueryUtil queryUtil,
+        UserUtil userUtil,
         ExtendedAppUserService extendedAppUserService,
         InviteService inviteService,
         FedimintHttpService fedimintHttpService
@@ -60,6 +66,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
         this.federationService = federationService;
         this.federationUtil = federationUtil;
         this.queryUtil = queryUtil;
+        this.userUtil = userUtil;
         this.extendedAppUserService = extendedAppUserService;
         this.inviteService = inviteService;
         this.fedimintHttpService = fedimintHttpService;
@@ -96,7 +103,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
 
             FederationDTO federationDTO = federationUtil.getFederation(creatMemberRequestDTO.getFederationId(), checkFederation);
 
-            Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(appUserDTO.getId());
+            Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(appUserDTO.getId(), federationDTO.getId());
             if (memberByUserId.isPresent()) {
                 throw new MemberExecption("Member Already Exist In System");
             }
@@ -135,8 +142,17 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
     }
 
     @Override
-    public Page<MemberDTO> getAll(MemberCriteria criteria, Pageable pageable) {
-        return memberQueryService.findByCriteria(criteria, pageable);
+    public List<MemberDTO> getAll(Long federationId, Pageable pageable) {
+        AppUserDTO loggedInUser = userUtil.getLoggedInUser();
+        Optional<MemberDTO> memberByUserIdAndFederationId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationId);
+        if (memberByUserIdAndFederationId.isPresent()) {
+            MemberCriteria criteria = new MemberCriteria();
+            LongFilter federationIdFilter = new LongFilter();
+            federationIdFilter.setEquals(federationId);
+            criteria.setFederationId(federationIdFilter);
+            return memberQueryService.findByCriteria(criteria, pageable).getContent();
+        }
+        return new ArrayList<>();
     }
 
     @Override

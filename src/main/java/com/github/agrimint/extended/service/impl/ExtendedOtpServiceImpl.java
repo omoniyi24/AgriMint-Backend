@@ -32,9 +32,6 @@ public class ExtendedOtpServiceImpl implements ExtendedOtpService {
     @Autowired
     private OtpRequestQueryService otpRequestQueryService;
 
-    @Autowired
-    private UserUtil userUtil;
-
     @Override
     public OtpResponseVM generateOtp(OtpRequestVM otpRequestVM) {
         OtpRequestDTO otpRequest = new OtpRequestDTO();
