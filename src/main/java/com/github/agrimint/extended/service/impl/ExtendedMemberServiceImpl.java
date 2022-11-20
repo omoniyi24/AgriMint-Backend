@@ -1,14 +1,16 @@
 package com.github.agrimint.extended.service.impl;
 
-import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_IS_NOT_ACTIVE;
-import static com.github.agrimint.extended.util.ApplicationConstants.FEDERATION_WITH_ID_DOES_NOT_EXIST;
-
 import com.github.agrimint.extended.dto.CreatMemberRequestDTO;
+import com.github.agrimint.extended.dto.CreateFedimintMemberHttpRequest;
+import com.github.agrimint.extended.dto.GetConnectionFedimintHttpResponse;
+import com.github.agrimint.extended.dto.MemberJoinFedimintHttpRequest;
 import com.github.agrimint.extended.exception.FederationExecption;
 import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.exception.UserException;
 import com.github.agrimint.extended.service.ExtendedAppUserService;
 import com.github.agrimint.extended.service.ExtendedMemberService;
+import com.github.agrimint.extended.service.FedimintHttpService;
+import com.github.agrimint.extended.util.FederationUtil;
 import com.github.agrimint.extended.util.QueryUtil;
 import com.github.agrimint.security.SecurityUtils;
 import com.github.agrimint.service.FederationService;
@@ -37,24 +39,30 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
     private final FederationService federationService;
+    private final FederationUtil federationUtil;
     private final QueryUtil queryUtil;
     private final ExtendedAppUserService extendedAppUserService;
     private final InviteService inviteService;
+    private final FedimintHttpService fedimintHttpService;
 
     public ExtendedMemberServiceImpl(
         MemberService memberService,
         MemberQueryService memberQueryService,
         FederationService federationService,
+        FederationUtil federationUtil,
         QueryUtil queryUtil,
         ExtendedAppUserService extendedAppUserService,
-        InviteService inviteService
+        InviteService inviteService,
+        FedimintHttpService fedimintHttpService
     ) {
         this.memberService = memberService;
         this.memberQueryService = memberQueryService;
         this.federationService = federationService;
+        this.federationUtil = federationUtil;
         this.queryUtil = queryUtil;
         this.extendedAppUserService = extendedAppUserService;
         this.inviteService = inviteService;
+        this.fedimintHttpService = fedimintHttpService;
     }
 
     @Override
@@ -86,13 +94,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
                 }
             }
 
-            Optional<FederationDTO> federation = federationService.findOne(creatMemberRequestDTO.getFederationId());
-            if (federation.isEmpty()) {
-                throw new FederationExecption(String.format(FEDERATION_WITH_ID_DOES_NOT_EXIST, creatMemberRequestDTO.getFederationId()));
-            }
-            if (checkFederation && federation.get().getActive().equals(Boolean.FALSE)) {
-                throw new FederationExecption(String.format(FEDERATION_IS_NOT_ACTIVE, creatMemberRequestDTO.getFederationId()));
-            }
+            FederationDTO federationDTO = federationUtil.getFederation(creatMemberRequestDTO.getFederationId(), checkFederation);
 
             Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserId(appUserDTO.getId());
             if (memberByUserId.isPresent()) {
@@ -102,11 +104,28 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
             BeanUtils.copyProperties(creatMemberRequestDTO, memberDTO);
             memberDTO.setPhoneNumber(appUserDTO.getPhoneNumber());
             memberDTO.setCountryCode(appUserDTO.getCountryCode());
-            memberDTO.setActive(active);
             memberDTO.setGuardian(guardian);
             memberDTO.setDateCreated(Instant.now());
             memberDTO.setUserId(appUserDTO.getId());
             MemberDTO savedMember = memberService.save(memberDTO);
+            if (Boolean.FALSE.equals(memberDTO.getGuardian())) {
+                CreateFedimintMemberHttpRequest createFedimintMemberHttpRequest = new CreateFedimintMemberHttpRequest();
+                createFedimintMemberHttpRequest.setFederationId(federationDTO.getFedimintId());
+                createFedimintMemberHttpRequest.setId(savedMember.getId());
+                boolean member = fedimintHttpService.createMember(createFedimintMemberHttpRequest);
+                memberDTO.setActive(active);
+                memberService.save(memberDTO);
+                if (member) {
+                    MemberJoinFedimintHttpRequest joinFedimintHttpRequest = new MemberJoinFedimintHttpRequest();
+                    joinFedimintHttpRequest.setFederationId(federationDTO.getFedimintId());
+                    GetConnectionFedimintHttpResponse getConnectionFedimintHttpResponse = fedimintHttpService.getFederationConnectionString(
+                        federationDTO.getFedimintId()
+                    );
+                    joinFedimintHttpRequest.setConnectionInfo(getConnectionFedimintHttpResponse);
+                    String memberId = String.valueOf(memberDTO.getId());
+                    fedimintHttpService.joinMember(joinFedimintHttpRequest, memberId);
+                }
+            }
             queryUtil.persistFederationMember(creatMemberRequestDTO.getFederationId(), savedMember.getId());
             return savedMember;
         } else {
