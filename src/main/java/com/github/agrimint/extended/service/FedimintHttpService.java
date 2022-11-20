@@ -17,4 +17,14 @@ public interface FedimintHttpService {
     boolean joinFederation(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId) throws FederationExecption;
 
     boolean exchangeKeys(JoinFedimintHttpRequest joinFedimintHttpRequest, String guadianFedimintId) throws FederationExecption;
+
+    boolean createMember(CreateFedimintMemberHttpRequest createFedimintMemberHttpRequest);
+
+    boolean joinMember(MemberJoinFedimintHttpRequest joinFedimintHttpRequest, String memberId);
+
+    MemberHoldingResponse getMemberHoldingInfo(String memberId, String federationId);
+
+    CreateInvoiceResponse createInvoice(CreateInvoiceHttpRequest createInvoiceHttpRequest);
+
+    PayInvoiceResponse payInvoice(PayInvoiceHttpRequest payInvoiceHttpRequest);
 }

@@ -131,8 +131,13 @@ fedimint:
   createFederationUrl: ${fedimint.baseUrl}/federations
   connectionUrl: ${fedimint.baseUrl}/federations/%s/connection-info
   createGuardianUrl: ${fedimint.baseUrl}/guardians
-  joinFederationUrl: ${fedimint.baseUrl}/guardians/%s/federations/joined
-  excahngeKeyUrl: ${fedimint.baseUrl}/guardians/%s/keys/exchange
+  guardianJoinFederationUrl: ${fedimint.baseUrl}/guardians/%s/federations/joined
+  exchangeKeyUrl: ${fedimint.baseUrl}/guardians/%s/keys/exchange
+  createMemberUrl: ${fedimint.baseUrl}/members
+  joinMemberUrl: ${fedimint.baseUrl}/members/%s/federations/joined
+  memberHoldingInfoUrl: ${fedimint.baseUrl}/members/%s/holdings?federationId=%s
+  createInvoiceUrl: ${fedimint.baseUrl}/invoices
+  payInvoiceUrl: ${fedimint.baseUrl}/invoices
 
 ussd:
   sendSmsUrl: 'http://localhost:3000/api'
