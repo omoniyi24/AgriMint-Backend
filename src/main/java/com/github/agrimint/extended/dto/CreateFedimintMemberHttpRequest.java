@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 public class CreateFedimintMemberHttpRequest {
 
-    private Long id;
+    private String id;
     private String federationId;
 }

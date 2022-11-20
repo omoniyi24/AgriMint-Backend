@@ -119,7 +119,7 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
             if (Boolean.FALSE.equals(memberDTO.getGuardian())) {
                 CreateFedimintMemberHttpRequest createFedimintMemberHttpRequest = new CreateFedimintMemberHttpRequest();
                 createFedimintMemberHttpRequest.setFederationId(federationDTO.getFedimintId());
-                createFedimintMemberHttpRequest.setId(savedMember.getId());
+                createFedimintMemberHttpRequest.setId(String.valueOf(savedMember.getId()));
                 boolean member = fedimintHttpService.createMember(createFedimintMemberHttpRequest);
                 memberDTO.setActive(active);
                 memberService.save(memberDTO);
