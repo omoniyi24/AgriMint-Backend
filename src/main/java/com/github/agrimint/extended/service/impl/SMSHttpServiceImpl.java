@@ -22,7 +22,7 @@ public class SMSHttpServiceImpl implements SMSHttpService {
     private final RestTemplate restTemplate;
     private final Gson gson;
 
-    @Value("${ussd.sendSmsUrl}")
+    @Value("${notification.sendSmsUrl}")
     private String sendSmsUrl;
 
     public SMSHttpServiceImpl(RestTemplate restTemplate) {
@@ -31,8 +31,7 @@ public class SMSHttpServiceImpl implements SMSHttpService {
     }
 
     @Override
-    //TODO call Valetin's endpoint
-    public void send(SmsRequestDTO smsRequestDTO) throws FederationExecption {
+    public boolean send(SmsRequestDTO smsRequestDTO) throws FederationExecption {
         String payload = gson.toJson(smsRequestDTO);
         log.info("SMS request payload {} on url: {} ", payload, this.sendSmsUrl);
         try {
@@ -43,12 +42,14 @@ public class SMSHttpServiceImpl implements SMSHttpService {
                 String responsePayload = postForEntity.getBody();
                 log.info("SMS response body {} ", responsePayload);
                 //                SmsResponseDTO smsResponseDTO = gson.fromJson(responsePayload, SmsResponseDTO.class);
+                return true;
             }
             throw new SmsException("Failed to send sms");
         } catch (Exception e) {
             log.error("Error getting sending sms");
             e.printStackTrace();
         }
+        return false;
     }
 
     private HttpHeaders getDefaultHeaders() {

@@ -139,5 +139,8 @@ fedimint:
   createInvoiceUrl: ${fedimint.baseUrl}/invoices
   payInvoiceUrl: ${fedimint.baseUrl}/invoices
 
-ussd:
-  sendSmsUrl: 'http://localhost:3000/api'
+notification:
+  sendSmsUrl: ${fedimint.baseUrl}/sms
+  template:
+    registration: 'AgriMint: Please use registration code %s to complete registration.'
+    invitation: 'AgriMint: You are invited to join federation %s. Please use invitation code %s.'

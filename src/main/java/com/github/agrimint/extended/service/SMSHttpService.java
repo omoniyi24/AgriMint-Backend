@@ -7,5 +7,5 @@ import com.github.agrimint.extended.exception.FederationExecption;
  * @author OMONIYI ILESANMI
  */
 public interface SMSHttpService {
-    void send(SmsRequestDTO smsRequestDTO);
+    boolean send(SmsRequestDTO smsRequestDTO);
 }

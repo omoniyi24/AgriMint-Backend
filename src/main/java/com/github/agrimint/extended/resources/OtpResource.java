@@ -14,16 +14,17 @@ import com.github.agrimint.service.dto.OtpRequestDTO;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(ApplicationUrl.BASE_CONTEXT_URL + "/otp")
 public class OtpResource {
+
+    @Value("${notification.template.registration}")
+    private String registrationTemplate;
 
     private final ExtendedOtpService extendedOtpService;
     private final ExtendedAppUserService extendedAppUserService;
@@ -53,7 +54,8 @@ public class OtpResource {
         smsRequestDTO.setCountryCode(otpRequestVM.getCountryCode());
         smsRequestDTO.setPhoneNumber(otpRequestVM.getPhoneNumber());
         smsRequestDTO.setName(StringUtils.defaultIfEmpty(otpRequestVM.getName(), "Customer"));
-        smsRequestDTO.setMessage(otpResponseVM.getOtp());
+        String message = String.format(registrationTemplate, otpResponseVM.getOtp());
+        smsRequestDTO.setMessage(message);
         smsHttpService.send(smsRequestDTO);
         return ResponseEntity.ok().body(otpResponseVM);
     }
@@ -65,5 +67,10 @@ public class OtpResource {
             return ResponseEntity.ok().body(otpValidationVM);
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/hey")
+    public String hey() {
+        return "Hey";
     }
 }
