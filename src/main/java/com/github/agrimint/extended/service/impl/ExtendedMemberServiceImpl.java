@@ -115,11 +115,11 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
             memberDTO.setActive(false);
             memberDTO.setDateCreated(Instant.now());
             memberDTO.setUserId(appUserDTO.getId());
-            MemberDTO savedMember = memberService.save(memberDTO);
+            memberDTO = memberService.save(memberDTO);
             if (Boolean.FALSE.equals(memberDTO.getGuardian())) {
                 CreateFedimintMemberHttpRequest createFedimintMemberHttpRequest = new CreateFedimintMemberHttpRequest();
                 createFedimintMemberHttpRequest.setFederationId(federationDTO.getFedimintId());
-                createFedimintMemberHttpRequest.setId(String.valueOf(savedMember.getId()));
+                createFedimintMemberHttpRequest.setId(String.valueOf(memberDTO.getId()));
                 boolean member = fedimintHttpService.createMember(createFedimintMemberHttpRequest);
                 memberDTO.setActive(active);
                 memberService.save(memberDTO);
@@ -134,8 +134,8 @@ public class ExtendedMemberServiceImpl implements ExtendedMemberService {
                     fedimintHttpService.joinMember(joinFedimintHttpRequest, memberId);
                 }
             }
-            queryUtil.persistFederationMember(creatMemberRequestDTO.getFederationId(), savedMember.getId());
-            return savedMember;
+            queryUtil.persistFederationMember(creatMemberRequestDTO.getFederationId(), memberDTO.getId());
+            return memberDTO;
         } else {
             throw new UserException("User not found");
         }
