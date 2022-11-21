@@ -129,6 +129,12 @@ spring:
     jpa:
       repositories:
         bootstrap-mode: deferred
+  h2:
+    console:
+      enabled: true
+      settings:
+        trace: true
+        web-allow-others: true
   jpa:
     open-in-view: false
     properties:
