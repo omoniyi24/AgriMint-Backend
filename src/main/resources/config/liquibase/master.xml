@@ -24,6 +24,7 @@
     <include file="config/liquibase/changelog/20221107194350_added_entity_Privilege.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221116182604_added_entity_OtpRequest.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221119160336_added_entity_Invite.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20221121212144_added_entity_Transactions.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20221107180621_added_entity_constraints_AppUser.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221107194349_added_entity_constraints_Role.xml" relativeToChangelogFile="false"/>

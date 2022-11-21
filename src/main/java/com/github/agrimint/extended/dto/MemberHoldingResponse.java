@@ -11,10 +11,10 @@ import lombok.Data;
 public class MemberHoldingResponse {
 
     @com.fasterxml.jackson.annotation.JsonProperty("total_amount")
-    private Long totalAmount;
+    private long totalAmount;
 
     @com.fasterxml.jackson.annotation.JsonProperty("total_num_notes")
-    private Long totalNumNotes;
+    private long totalNumNotes;
 
     @com.fasterxml.jackson.annotation.JsonProperty("details")
     private Map<String, String> details;

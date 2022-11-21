@@ -138,6 +138,8 @@ fedimint:
   memberHoldingInfoUrl: ${fedimint.baseUrl}/members/%s/holdings?federationId=%s
   createInvoiceUrl: ${fedimint.baseUrl}/invoices
   payInvoiceUrl: ${fedimint.baseUrl}/invoices
+  #  transferMintUrl: ${fedimint.baseUrl}/transfers
+  transferMintUrl: 'http://demo6543383.mockable.io/api/agrimint/transfers'
 
 notification:
   sendSmsUrl: ${fedimint.baseUrl}/sms

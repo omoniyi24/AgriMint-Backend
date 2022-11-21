@@ -78,6 +78,27 @@ entity Invite {
     active Boolean required
 }
 
+entity Transactions(transactions) {
+    federationId Long required,
+    memberId String,
+    receiverId String
+    amountInSat Long required ,
+    description String required,
+    drcr DRCR required,
+    transactionId String required,
+    transactionDate Instant required,
+    transactionType TransactionType required,
+}
+
+enum TransactionType {
+    ON_MINT,
+    OFF_MINT
+}
+
+enum DRCR{
+    DR, CR
+}
+
 
 relationship ManyToMany{
     AppUser {authorities(name)} to Role {users},

@@ -52,6 +52,9 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
     @Value("${fedimint.payInvoiceUrl}")
     private String payInvoiceUrl;
 
+    @Value("${fedimint.transferMintUrl}")
+    private String transferMintUrl;
+
     public FedimintHttpServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         this.gson = new Gson();
@@ -265,6 +268,27 @@ public class FedimintHttpServiceImpl implements FedimintHttpService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new MemberExecption("Error paying invoice");
+        }
+    }
+
+    @Override
+    public TransferMintResponse transferMint(TransferMintHttpRequest transferMintHttpRequest) {
+        String payload = gson.toJson(transferMintHttpRequest);
+        try {
+            String url = this.transferMintUrl;
+            HttpEntity<String> entity = new HttpEntity<>(payload, getDefaultHeaders());
+            log.info("transferMint request payload {} on url: {}", entity, url);
+            ResponseEntity<String> postForEntity = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+            log.info("transferMint RAW response payload {} ", postForEntity);
+            if (postForEntity.getStatusCode().equals(HttpStatus.OK) && postForEntity.getBody() != null) {
+                String responsePayload = postForEntity.getBody();
+                log.info("transferMint response body {} ", responsePayload);
+                return gson.fromJson(responsePayload, TransferMintResponse.class);
+            }
+            throw new MemberExecption("Failed to transfer mint");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MemberExecption("Error transferring mint");
         }
     }
 

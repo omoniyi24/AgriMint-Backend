@@ -1,7 +1,6 @@
 package com.github.agrimint.extended.dto;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import lombok.Data;
 
 /**
@@ -11,7 +10,7 @@ import lombok.Data;
 @Data
 public class CreateInvoiceDTO {
 
-    @NotEmpty
+    @Digits(integer = 21, message = "Invalid amount", fraction = 0)
     private Long amountInSat;
 
     private String description;

@@ -105,6 +105,19 @@ public class QueryUtil {
         return Optional.ofNullable(federationMemberQueryService.findByCriteria(federationMemberCriteria).stream().findFirst().orElse(null));
     }
 
+    public Optional<MemberDTO> getMember(Long federationId, Long memberId) {
+        MemberCriteria memberCriteria = new MemberCriteria();
+        LongFilter federationIdFilter = new LongFilter();
+        federationIdFilter.setEquals(federationId);
+        memberCriteria.setFederationId(federationIdFilter);
+
+        LongFilter memberIdFilter = new LongFilter();
+        memberIdFilter.setEquals(memberId);
+        memberCriteria.setId(memberIdFilter);
+
+        return Optional.ofNullable(memberQueryService.findByCriteria(memberCriteria).stream().findFirst().orElse(null));
+    }
+
     public Optional<AppUserDTO> getUserByLogin(String login) {
         AppUserCriteria appUserCriteria = new AppUserCriteria();
         StringFilter loginFilter = new StringFilter();
