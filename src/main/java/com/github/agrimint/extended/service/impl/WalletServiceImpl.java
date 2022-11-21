@@ -43,10 +43,7 @@ public class WalletServiceImpl implements WalletService {
         AppUserDTO loggedInUser = userUtil.getLoggedInUser();
         Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationDTO.getId());
         if (memberByUserId.isPresent()) {
-            return fedimintHttpService.getMemberHoldingInfo(
-                String.valueOf(memberByUserId.get().getId()),
-                String.valueOf(federationDTO.getId())
-            );
+            return fedimintHttpService.getMemberHoldingInfo(String.valueOf(memberByUserId.get().getId()), federationDTO.getFedimintId());
         }
         throw new MemberExecption("Federation Member does not exist");
     }
