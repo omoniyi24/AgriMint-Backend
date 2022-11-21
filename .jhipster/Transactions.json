@@ -1,0 +1,64 @@
+{
+  "name": "Transactions",
+  "fields": [
+    {
+      "fieldName": "federationId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "memberId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "receiverId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "amountInSat",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "drcr",
+      "fieldType": "DRCR",
+      "fieldValues": "DR,CR",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "transactionId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "transactionDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "transactionType",
+      "fieldType": "TransactionType",
+      "fieldValues": "ON_MINT,OFF_MINT",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "relationships": [],
+  "entityTableName": "transactions",
+  "dto": "mapstruct",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "microserviceName": "AgriMint",
+  "clientRootFolder": "AgriMint",
+  "databaseType": "sql",
+  "changelogDate": "20221121212144"
+}

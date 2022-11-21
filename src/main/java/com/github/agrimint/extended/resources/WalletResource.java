@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(ApplicationUrl.BASE_CONTEXT_URL + "/wallet")
 public class WalletResource {
 
-    private final Logger log = LoggerFactory.getLogger(ExtendedMemberResource.class);
+    private final Logger log = LoggerFactory.getLogger(WalletResource.class);
 
     private final WalletService walletService;
 
@@ -53,5 +53,15 @@ public class WalletResource {
         log.debug("REST payFederationUserInvoice : {}", payInvoiceDTO);
         PayInvoiceResponse payInvoiceResponse = walletService.payInvoice(federationId, payInvoiceDTO);
         return ResponseEntity.ok(payInvoiceResponse);
+    }
+
+    @PostMapping("federation/{federationId}/transfer-mint")
+    public ResponseEntity<TransferMintResponse> transferMint(
+        @PathVariable Long federationId,
+        @Valid @RequestBody TransferMintRequestDTO transferMintRequestDTO
+    ) {
+        log.debug("REST transferMint : {}", transferMintRequestDTO);
+        TransferMintResponse transferMintResponse = walletService.transferMint(federationId, transferMintRequestDTO);
+        return ResponseEntity.ok(transferMintResponse);
     }
 }

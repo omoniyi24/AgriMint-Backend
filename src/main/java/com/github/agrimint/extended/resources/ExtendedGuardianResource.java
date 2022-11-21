@@ -25,7 +25,7 @@ import tech.jhipster.web.util.HeaderUtil;
 public class ExtendedGuardianResource {
 
     private static final String ENTITY_NAME = "agriMintGuardian";
-    private final Logger log = LoggerFactory.getLogger(GuardianResource.class);
+    private final Logger log = LoggerFactory.getLogger(ExtendedGuardianResource.class);
     private final ExtendedGuardianService guardianService;
 
     @Value("${jhipster.clientApp.name}")

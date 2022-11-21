@@ -27,4 +27,6 @@ public interface FedimintHttpService {
     CreateInvoiceResponse createInvoice(CreateInvoiceHttpRequest createInvoiceHttpRequest);
 
     PayInvoiceResponse payInvoice(PayInvoiceHttpRequest payInvoiceHttpRequest);
+
+    TransferMintResponse transferMint(TransferMintHttpRequest transferMintHttpRequest);
 }

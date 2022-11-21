@@ -12,4 +12,6 @@ public interface WalletService {
     CreateInvoiceResponse generateInvoice(Long federationId, CreateInvoiceDTO createInvoiceDTO);
 
     PayInvoiceResponse payInvoice(Long federationId, PayInvoiceDTO payInvoiceDTO);
+
+    TransferMintResponse transferMint(Long federationId, TransferMintRequestDTO transferMintRequestDTO);
 }

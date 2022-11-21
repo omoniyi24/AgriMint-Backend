@@ -9,5 +9,6 @@ import lombok.Data;
 @Data
 public class PayInvoiceResponse {
 
-    private String paymentHash;
+    @com.fasterxml.jackson.annotation.JsonProperty("tx_id")
+    private String transactionId;
 }
