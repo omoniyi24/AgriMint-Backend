@@ -109,15 +109,19 @@ public class TokenProvider {
     public String createToken(AppUserDTO profile, boolean rememberMe) throws InvocationTargetException, IllegalAccessException {
         String authorities = profile.getAuthorities().stream().map(RoleDTO::getName).collect(Collectors.joining(","));
         Date issuedDate = new Date();
-        long now = (issuedDate).getTime();
-        ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.systemDefault());
+        //        long now = (issuedDate).getTime();
+        //        ZonedDateTime zdtNow = ZonedDateTime.now(ZoneId.systemDefault());
 
-        Date validity;
-        if (rememberMe) {
-            validity = Date.from(zdtNow.plusSeconds(tokenValidityInSecondsForRememberMe).toInstant());
-        } else {
-            validity = Date.from(zdtNow.plusSeconds(tokenValidityInSeconds).toInstant());
-        }
+        //        Date validity;
+        //        if (rememberMe) {
+        //            validity = Date.from(zdtNow.plusSeconds(tokenValidityInSecondsForRememberMe).toInstant());
+        //        } else {
+        //            validity = Date.from(zdtNow.plusSeconds(tokenValidityInSeconds).toInstant());
+        //        }
+
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + this.tokenValidityInMilliseconds);
+
         JwtAppUserDTO jwtUserInfo = new JwtAppUserDTO();
         BeanUtils.copyProperties(jwtUserInfo, profile);
         return Jwts
