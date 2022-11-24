@@ -4,23 +4,17 @@ import static com.github.agrimint.domain.enumeration.DRCR.CR;
 import static com.github.agrimint.domain.enumeration.DRCR.DR;
 import static com.github.agrimint.domain.enumeration.TransactionType.ON_MINT;
 
-import com.github.agrimint.domain.Transactions;
-import com.github.agrimint.domain.enumeration.DRCR;
-import com.github.agrimint.domain.enumeration.TransactionType;
 import com.github.agrimint.extended.dto.*;
 import com.github.agrimint.extended.exception.MemberExecption;
 import com.github.agrimint.extended.service.FedimintHttpService;
 import com.github.agrimint.extended.service.WalletService;
-import com.github.agrimint.extended.util.FederationUtil;
-import com.github.agrimint.extended.util.QueryUtil;
-import com.github.agrimint.extended.util.TransactionUtil;
-import com.github.agrimint.extended.util.UserUtil;
-import com.github.agrimint.service.TransactionsService;
+import com.github.agrimint.extended.util.*;
 import com.github.agrimint.service.dto.AppUserDTO;
 import com.github.agrimint.service.dto.FederationDTO;
 import com.github.agrimint.service.dto.MemberDTO;
-import com.github.agrimint.service.dto.TransactionsDTO;
-import java.time.Instant;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -37,19 +31,22 @@ public class WalletServiceImpl implements WalletService {
     private final UserUtil userUtil;
     private final QueryUtil queryUtil;
     private final TransactionUtil transactionUtil;
+    private final BalanceUtil balanceUtil;
 
     public WalletServiceImpl(
         FederationUtil federationUtil,
         FedimintHttpService fedimintHttpService,
         UserUtil userUtil,
         QueryUtil queryUtil,
-        TransactionUtil transactionUtil
+        TransactionUtil transactionUtil,
+        BalanceUtil balanceUtil
     ) {
         this.federationUtil = federationUtil;
         this.fedimintHttpService = fedimintHttpService;
         this.userUtil = userUtil;
         this.queryUtil = queryUtil;
         this.transactionUtil = transactionUtil;
+        this.balanceUtil = balanceUtil;
     }
 
     @Override
@@ -58,7 +55,26 @@ public class WalletServiceImpl implements WalletService {
         AppUserDTO loggedInUser = userUtil.getLoggedInUser();
         Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationDTO.getId());
         if (memberByUserId.isPresent()) {
-            return fedimintHttpService.getMemberHoldingInfo(String.valueOf(memberByUserId.get().getId()), federationDTO.getFedimintId());
+            MemberDTO memberDTO = memberByUserId.get();
+            long totalAmount = balanceUtil.getMemberBalanceById(memberDTO.getId());
+            int totalNotes = 6;
+            MemberHoldingResponse memberHoldingInfo = new MemberHoldingResponse();
+            memberHoldingInfo.setDetails(new HashMap<>());
+            memberHoldingInfo.setTotalAmount(totalAmount);
+            memberHoldingInfo.setTotalNumNotes(totalNotes);
+            return memberHoldingInfo;
+            //            if(totalAmount > 0){
+            //                memberHoldingInfo.setTotalAmount(totalAmount);
+            //                memberHoldingInfo.setTotalNumNotes(totalNotes);
+            //                return memberHoldingInfo;
+            //            }else {
+            //                balanceUtil.setMemberBalance(memberDTO.getId(), 500L);
+            //                memberHoldingInfo.setTotalAmount(balanceUtil.getMemberBalanceById(memberDTO.getId()));
+            //                memberHoldingInfo.setTotalNumNotes(totalNotes);
+            //                return memberHoldingInfo;
+            //            }
+            //            MemberHoldingResponse memberHoldingInfo = fedimintHttpService.getMemberHoldingInfo(String.valueOf(memberByUserId.get().getId()), federationDTO.getFedimintId());
+            //            return memberHoldingInfo;
         }
         throw new MemberExecption("Federation Member does not exist");
     }
@@ -96,10 +112,16 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public TransferMintResponse transferMint(Long federationId, TransferMintRequestDTO transferMintRequestDTO) {
+        Long orginalAmount = transferMintRequestDTO.getAmountInSat();
+
         FederationDTO federationDTO = federationUtil.getFederation(federationId, true);
         AppUserDTO loggedInUser = userUtil.getLoggedInUser();
         Optional<MemberDTO> memberByUserId = queryUtil.getMemberByUserIdAndFederationId(loggedInUser.getId(), federationDTO.getId());
         if (memberByUserId.isPresent()) {
+            if (balanceUtil.getMemberBalanceById(memberByUserId.get().getId()) < transferMintRequestDTO.getAmountInSat()) {
+                throw new MemberExecption("Insufficient Amount");
+            }
+
             Optional<MemberDTO> recipientByUserId = queryUtil.getMember(
                 federationDTO.getId(),
                 transferMintRequestDTO.getRecipientMemberId()
@@ -115,6 +137,10 @@ public class WalletServiceImpl implements WalletService {
                 transferMintHttpRequest.setSenderMemberId(String.valueOf(loggedInMemberDTO.getId()));
                 TransferMintResponse transferMintResponse = fedimintHttpService.transferMint(transferMintHttpRequest);
                 if (StringUtils.isNotBlank(transferMintResponse.getTx_id())) {
+                    Long loggedInUserAvailableBal = balanceUtil.getMemberBalanceById(loggedInMemberDTO.getId());
+                    long loggedInUserNewAvailableBal = loggedInUserAvailableBal - transferMintRequestDTO.getAmountInSat();
+                    balanceUtil.setMemberBalance(loggedInMemberDTO.getId(), loggedInUserNewAvailableBal);
+                    transferMintRequestDTO.setAmountInSat(balanceUtil.getMemberBalanceById(loggedInMemberDTO.getId()));
                     transactionUtil.persistTransaction(
                         transferMintRequestDTO,
                         loggedInMemberDTO,
@@ -123,6 +149,11 @@ public class WalletServiceImpl implements WalletService {
                         ON_MINT,
                         federationId
                     );
+
+                    Long recipientUserAvailableBal = balanceUtil.getMemberBalanceById(recipientMemberDTO.getId());
+                    long recipientUserNewAvailableBal = recipientUserAvailableBal + orginalAmount;
+                    balanceUtil.setMemberBalance(recipientMemberDTO.getId(), recipientUserNewAvailableBal);
+                    transferMintRequestDTO.setAmountInSat(balanceUtil.getMemberBalanceById(recipientMemberDTO.getId()));
                     transactionUtil.persistTransaction(
                         transferMintRequestDTO,
                         recipientMemberDTO,
